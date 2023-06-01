@@ -7,8 +7,9 @@ import 'routes/app_routes.dart';
 void main() {
 
   var getMaterialApp = GetMaterialApp(
+    theme: ThemeData(useMaterial3: true),
     getPages: AppPages.pages,
-    initialRoute: Routes.INITIAL_PAGE,
+    initialRoute: Routes.SPLASH_PAGE,
   );
   runApp(getMaterialApp);
 }

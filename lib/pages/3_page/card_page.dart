@@ -10,6 +10,7 @@ class CardPage extends GetWidget<CardController> {
 
   @override
   Widget build(BuildContext context) {
+    DateTime date = DateTime.now().add(Duration(hours: 9));
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -57,7 +58,7 @@ class CardPage extends GetWidget<CardController> {
           TimerBuilder.periodic(
             Duration(seconds: 1),
             builder: (context) => Text(
-              '${DateTime.now().year}.${DateTime.now().month}.${DateTime.now().day}  ${DateTime.now().hour} : ${DateTime.now().minute} : ${DateTime.now().second}',
+              '${date.year}.${date.month}.${date.day}  ${date.hour} : ${date.minute} : ${date.second}',
             ),
           ),
           SizedBox(height: 20),
@@ -67,7 +68,6 @@ class CardPage extends GetWidget<CardController> {
             },
             child: Text('NEXT!!'),
           ),
-          
         ],
       ),
     );

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/state_manager.dart';
-import 'package:tarot_app/pages/2_page/check_page.dart';
 
 import '../../routes/app_routes.dart';
 import 'initial_controller.dart';
@@ -15,25 +13,72 @@ class InitialPage extends GetWidget<InitialController> {
       body: Column(
         children: [
           Image.asset('attachedfiles/lotifile/logo_animation.gif'),
-          Text('아이콘들 나옴'),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                      height: 50,
+                      width: 50,
+                      child:
+                          Image.asset('attachedfiles/initialpage/아이콘01.png')),
+                  SizedBox(
+                      height: 50,
+                      width: 50,
+                      child:
+                          Image.asset('attachedfiles/initialpage/아이콘02.png')),
+                  SizedBox(
+                      height: 50,
+                      width: 50,
+                      child:
+                          Image.asset('attachedfiles/initialpage/아이콘03.png')),
+                  Text(
+                    '등 총 7가지의 운세!',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+              Text(
+                '오늘! 지금!',
+                style: TextStyle(fontSize: 20),
+              ),
+              Text(
+                '나의 럭키포인트(Lucky point)는??',
+                style: TextStyle(fontSize: 20),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 60,
+          ),
           ElevatedButton(
             onPressed: () {
-              Get.toNamed(Routes.CHECK_PAGE);
+              Get.toNamed(Routes.CHECK_PAGE, arguments: 1);
             },
             child: Text('START!!'),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                onPressed: () {},
-                child: Text('럭키인증'),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                child: Text('럭키상자'),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(top: 30),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Get.toNamed(Routes.LUCKY_BOX_PAGE,
+                        arguments: {'initialTab': 1});
+                  },
+                  child: Text('럭키인증'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Get.toNamed(Routes.LUCKY_BOX_PAGE,
+                        arguments: {'initialTab': 0});
+                  },
+                  child: Text('럭키상자'),
+                ),
+              ],
+            ),
           )
         ],
       ),

@@ -17,11 +17,16 @@ class ResultPage extends GetWidget<ResultController> {
             children: [
               TimerBuilder.periodic(
                 Duration(seconds: 1),
-                builder: (context) => Text(
-                  '${DateTime.now().year}.${DateTime.now().month}.${DateTime.now().day}  ${DateTime.now().hour} : ${DateTime.now().minute} : ${DateTime.now().second}',
-                  style: TextStyle(fontSize: 20),
-                ),
+                builder: (context) {
+                  // 한국 시간은 표준시간 + 9
+                  DateTime date = DateTime.now().add(Duration(hours: 9));
+                  return Text(
+                    '${date.year}.${date.month}.${date.day}  ${date.hour} : ${date.minute} : ${date.second}',
+                    style: TextStyle(fontSize: 20),
+                  );
+                },
               ),
+              
               Text('나의 럭키포인트(Lucky Point)는 XX!!'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -33,28 +38,30 @@ class ResultPage extends GetWidget<ResultController> {
                 child: Image.asset('attachedfiles/levelfile/g-1.gif'),
               ),
               ElevatedButton(
-            onPressed: () {
-              Get.offAllNamed(Routes.INITIAL_PAGE);
-            },
-            child: Text('restart!!'),
-          ),
+                onPressed: () {
+                  Get.offAllNamed(Routes.INITIAL_PAGE);
+                },
+                child: Text('restart!!'),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-            onPressed: () {
-              Get.toNamed(Routes.LUCKY_CERTIFICATION_PAGE);
-            },
-            child: Text('럭키인증'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Get.toNamed(Routes.LUCKY_BOX_PAGE);
-            },
-            child: Text('럭키박스'),
-          ),
-            ],
-          )
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.toNamed(Routes.LUCKY_BOX_PAGE,
+                          arguments: {'initialTab': 1});
+                    },
+                    child: Text('럭키인증'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.toNamed(Routes.LUCKY_BOX_PAGE,
+                          arguments: {'initialTab': 0});
+                    },
+                    child: Text('럭키박스'),
+                  ),
+                ],
+              )
             ],
           ),
         ),
