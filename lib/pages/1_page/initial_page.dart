@@ -54,7 +54,7 @@ class InitialPage extends GetWidget<InitialController> {
           ),
           ElevatedButton(
             onPressed: () {
-              Get.toNamed(Routes.CHECK_PAGE, arguments: 1);
+              Get.toNamed(Routes.CHECK_PAGE, arguments: 0);
             },
             child: Text('START!!'),
           ),
