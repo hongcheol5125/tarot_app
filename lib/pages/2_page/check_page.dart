@@ -3,43 +3,180 @@ import 'package:get/get.dart';
 import 'package:timer_builder/timer_builder.dart';
 
 import '../../routes/app_routes.dart';
+import '../../utils/birthday_list.dart';
 import 'check_controller.dart';
 
 class CheckPage extends GetWidget<CheckController> {
   const CheckPage({super.key});
 
-  checkList() {
+  checkList(BuildContext context) {
     return Column(
       children: [
-        Expanded(
-          child: Column(
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          // 닉네임 텍스트필드 + 체크박스
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: controller.nicknameController,
-                      decoration: InputDecoration(hintText: '닉네임'),
+              Text('이름'),
+              SizedBox(width: 20),
+              Expanded(
+                child: TextField(
+                  controller: controller.nicknameController,
+                  decoration: InputDecoration(hintText: '닉네임'),
+                ),
+              ),
+              SizedBox(
+                child: Obx(
+                  () => Transform.scale(
+                    scale: 1.5,
+                    child: Checkbox(
+                      activeColor: Colors.white,
+                      checkColor: Colors.red,
+                      value: controller.isCheckedNickName.value,
+                      onChanged: controller.onChangedCheckNickName,
                     ),
                   ),
-                  controller.checkBox(),
-                ],
-              ),
-              Text('생년월일 드롭다운'),
-              Text('태어난 시각 드롭다운 + 체크박스'),
-              ElevatedButton(
-                onPressed: () {
-                  if (controller.checkController.hasClients) {
-                    controller.checkController.animateToPage(1,
-                        duration: Duration(milliseconds: 400),
-                        curve: Curves.easeInOut);
-                    controller.pageIndex.value = 1;
-                  }
-                },
-                child: Text('NEXT!!'),
+                ),
               ),
             ],
           ),
+        ),
+
+        // 생년월일 드롭다운
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text('생년월일'),
+            SizedBox(
+              child: Obx(
+                () => DropdownButton<String>(
+                    value: controller.dropdownYear.value, // 이걸 적어줘야 처음 숫자 뜬다.
+                    items: years
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: controller.onChangedDropdownYear),
+              ),
+            ),
+            SizedBox(
+              child: Obx(
+                () => DropdownButton<String>(
+                    value: controller.dropdownMonth.value, // 이걸 적어줘야 처음 숫자 뜬다.
+                    items: months
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: controller.onChangedDropdownMonth),
+              ),
+            ),
+            SizedBox(
+              child: Obx(
+                () => DropdownButton<String>(
+                    value: controller.dropdownDay.value, // 이걸 적어줘야 처음 숫자 뜬다.
+                    items: days
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: controller.onChangedDropdownDay),
+              ),
+            ),
+          ],
+        ),
+
+        //태어난 시각 드롭다운 + 체크박스
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text('태어난 시간'),
+            SizedBox(
+              child: Obx(
+                () => DropdownButton<String>(
+                    value: controller.dropdownHour.value, // 이걸 적어줘야 처음 숫자 뜬다.
+                    items: hours
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: controller.onChangedDropdownHour),
+              ),
+            ),
+            SizedBox(
+              child: Obx(
+                () => DropdownButton<String>(
+                    value: controller.dropdownMinute.value, // 이걸 적어줘야 처음 숫자 뜬다.
+                    items: minutes
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: controller.onChangedDropdownMinute),
+              ),
+            ),
+            SizedBox(
+              child: Obx(
+                () => Transform.scale(
+                  scale: 1.5,
+                  child: Checkbox(
+                    activeColor: Colors.white,
+                    checkColor: Colors.red,
+                    value: controller.isCheckedHour.value,
+                    onChanged: controller.onChangedCheckHour,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        ElevatedButton(
+          onPressed: () {
+            if(controller.dropdownYear.value == '년' || controller.dropdownMonth.value == '월' || controller.dropdownDay.value == '일'){
+              showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => Dialog(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const Text('생년 / 월 / 일을 골라주세요.'),
+                    const SizedBox(height: 15),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+            }else{
+              if (controller.checkController.hasClients) {
+              controller.checkController.animateToPage(1,
+                  duration: Duration(milliseconds: 400),
+                  curve: Curves.easeInOut);
+              controller.pageIndex.value = 1;
+            }
+            }
+            
+          },
+          child: Text('NEXT!!'),
         ),
         ElevatedButton(
           onPressed: () {
@@ -113,7 +250,7 @@ class CheckPage extends GetWidget<CheckController> {
                           duration: Duration(milliseconds: 400),
                           curve: Curves.easeInOut);
                       controller.pageIndex.value = 0;
-                    }else{
+                    } else {
                       Get.offAllNamed(Routes.INITIAL_PAGE);
                     }
                   }
@@ -199,7 +336,7 @@ class CheckPage extends GetWidget<CheckController> {
               child: PageView(
                 controller: controller.checkController,
                 children: <Widget>[
-                  checkList(),
+                  checkList(context),
                   cardList(),
                 ],
               ),
