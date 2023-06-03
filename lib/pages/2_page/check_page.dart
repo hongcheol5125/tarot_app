@@ -51,8 +51,7 @@ class CheckPage extends GetWidget<CheckController> {
               child: Obx(
                 () => DropdownButton<String>(
                     value: controller.dropdownYear.value, // 이걸 적어줘야 처음 숫자 뜬다.
-                    items: years
-                        .map<DropdownMenuItem<String>>((String value) {
+                    items: years.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -65,8 +64,7 @@ class CheckPage extends GetWidget<CheckController> {
               child: Obx(
                 () => DropdownButton<String>(
                     value: controller.dropdownMonth.value, // 이걸 적어줘야 처음 숫자 뜬다.
-                    items: months
-                        .map<DropdownMenuItem<String>>((String value) {
+                    items: months.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -79,8 +77,7 @@ class CheckPage extends GetWidget<CheckController> {
               child: Obx(
                 () => DropdownButton<String>(
                     value: controller.dropdownDay.value, // 이걸 적어줘야 처음 숫자 뜬다.
-                    items: days
-                        .map<DropdownMenuItem<String>>((String value) {
+                    items: days.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -101,8 +98,7 @@ class CheckPage extends GetWidget<CheckController> {
               child: Obx(
                 () => DropdownButton<String>(
                     value: controller.dropdownHour.value, // 이걸 적어줘야 처음 숫자 뜬다.
-                    items: hours
-                        .map<DropdownMenuItem<String>>((String value) {
+                    items: hours.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -115,8 +111,8 @@ class CheckPage extends GetWidget<CheckController> {
               child: Obx(
                 () => DropdownButton<String>(
                     value: controller.dropdownMinute.value, // 이걸 적어줘야 처음 숫자 뜬다.
-                    items: minutes
-                        .map<DropdownMenuItem<String>>((String value) {
+                    items:
+                        minutes.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -142,39 +138,92 @@ class CheckPage extends GetWidget<CheckController> {
         ),
 
         ElevatedButton(
-          onPressed: () {
-            if(controller.dropdownYear.value == '년' || controller.dropdownMonth.value == '월' || controller.dropdownDay.value == '일'){
-              showDialog<String>(
-            context: context,
-            builder: (BuildContext context) => Dialog(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Text('생년 / 월 / 일을 골라주세요.'),
-                    const SizedBox(height: 15),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Close'),
+          onPressed: () async {
+            if (controller.isCheckedNickName.value == false &&
+                controller.nicknameController.text == '') {
+              await showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => Dialog(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text('이름을 적거나 체크박스를 체크해주세요.'),
+                        const SizedBox(height: 15),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Close'),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          );
-            }else{
+              );
+            }
+            if (controller.dropdownYear.value == '년' ||
+                controller.dropdownMonth.value == '월' ||
+                controller.dropdownDay.value == '일') {
+             await showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => Dialog(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text('생년 / 월 / 일을 골라주세요.'),
+                        const SizedBox(height: 15),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Close'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
+            if (controller.isCheckedHour.value == false) {
+              if (controller.dropdownHour.value == '시' &&
+                  controller.dropdownMinute.value == '분') {
+                showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => Dialog(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          const Text('태어난 시, 분을 고르시거나 체크박스를 체크해주세요.'),
+                          const SizedBox(height: 15),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Close'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }
+            } else {
               if (controller.checkController.hasClients) {
-              controller.checkController.animateToPage(1,
-                  duration: Duration(milliseconds: 400),
-                  curve: Curves.easeInOut);
-              controller.pageIndex.value = 1;
+                controller.checkController.animateToPage(1,
+                    duration: Duration(milliseconds: 400),
+                    curve: Curves.easeInOut);
+                controller.pageIndex.value = 1;
+              }
             }
-            }
-            
           },
           child: Text('NEXT!!'),
         ),
@@ -228,7 +277,14 @@ class CheckPage extends GetWidget<CheckController> {
         SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {
-            Get.toNamed(Routes.RESULT_PAGE);
+            Get.toNamed(Routes.RESULT_PAGE, arguments: [
+              controller.nicknameController.text,
+              controller.dropdownYear.value,
+              controller.dropdownMonth.value,
+              controller.dropdownDay.value,
+              controller.dropdownHour.value,
+              controller.dropdownMinute.value,
+            ]);
           },
           child: Text('NEXT!!'),
         ),
@@ -287,7 +343,7 @@ class CheckPage extends GetWidget<CheckController> {
                               : const BoxDecoration(color: Colors.grey),
                           alignment: Alignment.center,
                           child: Text(
-                            'button1',
+                            '1-1 인적사항',
                             style: TextStyle(
                               color: controller.pageIndex.value == 0
                                   ? null
@@ -318,7 +374,7 @@ class CheckPage extends GetWidget<CheckController> {
                               : const BoxDecoration(color: Colors.grey),
                           alignment: Alignment.center,
                           child: Text(
-                            'button2',
+                            '1-2 타로카드',
                             style: TextStyle(
                               color: controller.pageIndex.value == 1
                                   ? null
