@@ -1,11 +1,10 @@
 import 'package:get/get.dart';
 
 class ResultController extends GetxController {
-@override
+  @override
   void onInit() {
     super.onInit();
     print('###################################');
     print(Get.arguments);
-
   }
 }

@@ -138,10 +138,10 @@ class CheckPage extends GetWidget<CheckController> {
         ),
 
         ElevatedButton(
-          onPressed: () async {
+          onPressed: () {
             if (controller.isCheckedNickName.value == false &&
                 controller.nicknameController.text == '') {
-              await showDialog<String>(
+              showDialog<String>(
                 context: context,
                 builder: (BuildContext context) => Dialog(
                   child: Padding(
@@ -163,11 +163,12 @@ class CheckPage extends GetWidget<CheckController> {
                   ),
                 ),
               );
+              return;
             }
             if (controller.dropdownYear.value == '년' ||
                 controller.dropdownMonth.value == '월' ||
                 controller.dropdownDay.value == '일') {
-             await showDialog<String>(
+              showDialog<String>(
                 context: context,
                 builder: (BuildContext context) => Dialog(
                   child: Padding(
@@ -189,6 +190,7 @@ class CheckPage extends GetWidget<CheckController> {
                   ),
                 ),
               );
+              return;
             }
             if (controller.isCheckedHour.value == false) {
               if (controller.dropdownHour.value == '시' &&
@@ -215,6 +217,7 @@ class CheckPage extends GetWidget<CheckController> {
                     ),
                   ),
                 );
+                return;
               }
             } else {
               if (controller.checkController.hasClients) {
@@ -238,27 +241,79 @@ class CheckPage extends GetWidget<CheckController> {
     );
   }
 
-  cardList() {
+  cardList(BuildContext context) {
     return Column(
       children: [
         SizedBox(height: 30),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            SizedBox(
-              height: 150,
-              width: 100,
-              child: Image.asset('attachedfiles/tarotcard/대기카드.png'),
+            Obx(
+              () => GestureDetector(
+                onTap: () {
+                  controller.changeImage1();
+                  if (controller.imagePath1.value ==
+                      controller.imagePath2.value || controller.imagePath1.value ==
+                      controller.imagePath3.value){
+                        controller.changeImage1();
+                      }
+                },
+                child: Container(
+                  width: 70,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(controller.imagePath1.value),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+              ),
             ),
-            SizedBox(
-              height: 150,
-              width: 100,
-              child: Image.asset('attachedfiles/tarotcard/대기카드.png'),
+            Obx(
+              () => GestureDetector(
+                onTap: () {
+                  controller.changeImage2();
+                  if (controller.imagePath2.value ==
+                      controller.imagePath1.value || controller.imagePath2.value ==
+                      controller.imagePath3.value) {
+                    controller.changeImage2();
+                  }
+                },
+                child: Container(
+                  width: 70,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(controller.imagePath2.value),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+              ),
             ),
-            SizedBox(
-              height: 150,
-              width: 100,
-              child: Image.asset('attachedfiles/tarotcard/대기카드.png'),
+            Obx(
+              () => GestureDetector(
+                onTap: () {
+                  controller.changeImage3();
+                  if (controller.imagePath3.value ==
+                          controller.imagePath1.value ||
+                      controller.imagePath3.value ==
+                          controller.imagePath2.value) {
+                    controller.changeImage3();
+                  }
+                },
+                child: Container(
+                  width: 70,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(controller.imagePath3.value),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -277,6 +332,35 @@ class CheckPage extends GetWidget<CheckController> {
         SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {
+            if (controller.imagePath1.value == 'attachedfiles/tarotcard/대기카드.png' ||
+                controller.imagePath2.value ==
+                    'attachedfiles/tarotcard/대기카드.png' ||
+                controller.imagePath3.value ==
+                    'attachedfiles/tarotcard/대기카드.png') {
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => Dialog(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text('세개의 카드를 모두 골라주세요!'),
+                        const SizedBox(height: 15),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Close'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+              return;
+            }
             Get.toNamed(Routes.RESULT_PAGE, arguments: [
               controller.nicknameController.text,
               controller.dropdownYear.value,
@@ -284,6 +368,9 @@ class CheckPage extends GetWidget<CheckController> {
               controller.dropdownDay.value,
               controller.dropdownHour.value,
               controller.dropdownMinute.value,
+              controller.imagePath1.value,
+              controller.imagePath2.value,
+              controller.imagePath3.value
             ]);
           },
           child: Text('NEXT!!'),
@@ -298,6 +385,7 @@ class CheckPage extends GetWidget<CheckController> {
       child: Scaffold(
         appBar: AppBar(
           leading: Obx(
+            // 뒤로가기 버튼
             () => IconButton(
                 onPressed: () {
                   if (controller.checkController.hasClients) {
@@ -390,10 +478,11 @@ class CheckPage extends GetWidget<CheckController> {
             ),
             Expanded(
               child: PageView(
+                physics: const NeverScrollableScrollPhysics(),
                 controller: controller.checkController,
                 children: <Widget>[
                   checkList(context),
-                  cardList(),
+                  cardList(context),
                 ],
               ),
             ),

@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../utils/birthday_list.dart';
+import '../../utils/tarotcard_imgs.dart';
 
 class CheckController extends GetxController {
   TextEditingController nicknameController = TextEditingController();
@@ -15,6 +18,11 @@ class CheckController extends GetxController {
   Rx<String> dropdownDay = Rx(days.first);
   Rx<String> dropdownHour = Rx(hours.first);
   Rx<String> dropdownMinute = Rx(minutes.first);
+  // ----------구분선(위:인적사항 / 아래:타로카드)---------------
+  Rx<String> imagePath1 = Rx('attachedfiles/tarotcard/대기카드.png');
+  Rx<String> imagePath2 = Rx('attachedfiles/tarotcard/대기카드.png');
+  Rx<String> imagePath3 = Rx('attachedfiles/tarotcard/대기카드.png');
+  
 
   @override
   void onInit() {
@@ -50,5 +58,21 @@ class CheckController extends GetxController {
 
   onChangedDropdownMinute(value) {
     dropdownMinute.value = value;
+  }
+
+  void changeImage1() {
+    Random random = Random();
+    int randomIndex = random.nextInt(images.length);
+    imagePath1.value = images[randomIndex];
+  }
+  void changeImage2() {
+    Random random = Random();
+    int randomIndex = random.nextInt(images.length);
+    imagePath2.value = images[randomIndex];
+  }
+  void changeImage3() {
+    Random random = Random();
+    int randomIndex = random.nextInt(images.length);
+    imagePath3.value = images[randomIndex];
   }
 }
