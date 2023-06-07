@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:timer_builder/timer_builder.dart';
 
+import '../../routes/app_routes.dart';
 import '../../utils/birthday_list.dart';
 import '../../utils/tarotcard_imgs.dart';
 
@@ -22,7 +24,6 @@ class CheckController extends GetxController {
   Rx<String> imagePath1 = Rx('attachedfiles/tarotcard/대기카드.png');
   Rx<String> imagePath2 = Rx('attachedfiles/tarotcard/대기카드.png');
   Rx<String> imagePath3 = Rx('attachedfiles/tarotcard/대기카드.png');
-  
 
   @override
   void onInit() {
@@ -65,14 +66,120 @@ class CheckController extends GetxController {
     int randomIndex = random.nextInt(images.length);
     imagePath1.value = images[randomIndex];
   }
+
   void changeImage2() {
     Random random = Random();
     int randomIndex = random.nextInt(images.length);
     imagePath2.value = images[randomIndex];
   }
+
   void changeImage3() {
     Random random = Random();
     int randomIndex = random.nextInt(images.length);
     imagePath3.value = images[randomIndex];
+  }
+
+  arrowButton() {
+    if (checkController.hasClients) {
+      if (pageIndex.value == 1) {
+        checkController.animateToPage(0,
+            duration: Duration(milliseconds: 400), curve: Curves.easeInOut);
+        pageIndex.value = 0;
+      } else {
+        Get.offAllNamed(Routes.INITIAL_PAGE);
+      }
+    }
+  }
+
+  onPressedChange1() {
+    changeImage1();
+    if (imagePath1.value == imagePath2.value ||
+        imagePath1.value == imagePath3.value) {
+     return changeImage1();
+    }
+  }
+
+  onPressedChange2() {
+    changeImage2();
+    if (imagePath2.value == imagePath1.value ||
+        imagePath2.value == imagePath3.value) {
+     return changeImage2();
+    }
+  }
+
+  onPressedChange3() {
+    changeImage3();
+    if (imagePath3.value == imagePath1.value ||
+        imagePath3.value == imagePath2.value) {
+      changeImage3();
+    }
+  }
+
+  randomCard1() {
+   return Obx(
+      () => GestureDetector(
+        onTap: onPressedChange1,
+        child: Container(
+          width: 70,
+          height: 120,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(imagePath1.value),
+              fit: BoxFit.fill,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  randomCard2() {
+   return Obx(
+      () => GestureDetector(
+        onTap: onPressedChange2,
+        child: Container(
+          width: 70,
+          height: 120,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(imagePath2.value),
+              fit: BoxFit.fill,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  randomCard3() {
+   return Obx(
+      () => GestureDetector(
+        onTap: onPressedChange3,
+        child: Container(
+          width: 70,
+          height: 120,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(imagePath3.value),
+              fit: BoxFit.fill,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  timeBuilder(){
+    return TimerBuilder.periodic(
+          Duration(seconds: 1),
+          builder: (context) {
+            // 한국 시간은 표준시간 + 9
+            DateTime date = DateTime.now().add(Duration(hours: 9));
+            return Text(
+              '${date.year}.${date.month}.${date.day}  ${date.hour} : ${date.minute} : ${date.second}',
+              style: TextStyle(fontSize: 20),
+            );
+          },
+        );
   }
 }

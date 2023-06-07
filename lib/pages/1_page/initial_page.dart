@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,46 +11,55 @@ class InitialPage extends GetWidget<InitialController> {
 
   @override
   Widget build(BuildContext context) {
+    Timer(
+      Duration(seconds: 6),
+      () {
+        controller.showText();
+      },
+    );
     return Scaffold(
       body: Column(
         children: [
           Image.asset('attachedfiles/lotifile/logo_animation.gif'),
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                      height: 50,
-                      width: 50,
-                      child:
-                          Image.asset('attachedfiles/initialpage/아이콘01.png')),
-                  SizedBox(
-                      height: 50,
-                      width: 50,
-                      child:
-                          Image.asset('attachedfiles/initialpage/아이콘02.png')),
-                  SizedBox(
-                      height: 50,
-                      width: 50,
-                      child:
-                          Image.asset('attachedfiles/initialpage/아이콘03.png')),
-                  Text(
-                    '등 총 7가지의 운세!',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ],
-              ),
-              Text(
-                '오늘! 지금!',
-                style: TextStyle(fontSize: 20),
-              ),
-              Text(
-                '나의 럭키포인트(Lucky point)는??',
-                style: TextStyle(fontSize: 20),
-              ),
-            ],
-          ),
+          Obx(() => Visibility(
+            visible: controller.isVisible.value,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                        height: 50,
+                        width: 50,
+                        child:
+                            Image.asset('attachedfiles/initialpage/아이콘01.png')),
+                    SizedBox(
+                        height: 50,
+                        width: 50,
+                        child:
+                            Image.asset('attachedfiles/initialpage/아이콘02.png')),
+                    SizedBox(
+                        height: 50,
+                        width: 50,
+                        child:
+                            Image.asset('attachedfiles/initialpage/아이콘03.png')),
+                    Text(
+                      '등 총 7가지의 운세!',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ],
+                ),
+                Text(
+                  '오늘! 지금!',
+                  style: TextStyle(fontSize: 20),
+                ),
+                Text(
+                  '나의 럭키포인트(Lucky point)는??',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
+          )),
           SizedBox(
             height: 60,
           ),

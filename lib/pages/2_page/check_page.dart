@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tarot_app/model/result.dart';
 import 'package:timer_builder/timer_builder.dart';
 
 import '../../routes/app_routes.dart';
@@ -137,6 +138,7 @@ class CheckPage extends GetWidget<CheckController> {
           ],
         ),
 
+        // NEXT 버튼(타로카드 페이지로 가기)
         ElevatedButton(
           onPressed: () {
             if (controller.isCheckedNickName.value == false &&
@@ -230,6 +232,8 @@ class CheckPage extends GetWidget<CheckController> {
           },
           child: Text('NEXT!!'),
         ),
+
+        // 처음페이지로 가는 버튼
         ElevatedButton(
           onPressed: () {
             Get.offAllNamed(Routes.INITIAL_PAGE);
@@ -248,90 +252,16 @@ class CheckPage extends GetWidget<CheckController> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Obx(
-              () => GestureDetector(
-                onTap: () {
-                  controller.changeImage1();
-                  if (controller.imagePath1.value ==
-                      controller.imagePath2.value || controller.imagePath1.value ==
-                      controller.imagePath3.value){
-                        controller.changeImage1();
-                      }
-                },
-                child: Container(
-                  width: 70,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(controller.imagePath1.value),
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Obx(
-              () => GestureDetector(
-                onTap: () {
-                  controller.changeImage2();
-                  if (controller.imagePath2.value ==
-                      controller.imagePath1.value || controller.imagePath2.value ==
-                      controller.imagePath3.value) {
-                    controller.changeImage2();
-                  }
-                },
-                child: Container(
-                  width: 70,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(controller.imagePath2.value),
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Obx(
-              () => GestureDetector(
-                onTap: () {
-                  controller.changeImage3();
-                  if (controller.imagePath3.value ==
-                          controller.imagePath1.value ||
-                      controller.imagePath3.value ==
-                          controller.imagePath2.value) {
-                    controller.changeImage3();
-                  }
-                },
-                child: Container(
-                  width: 70,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(controller.imagePath3.value),
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            controller.randomCard1(),
+            controller.randomCard2(),
+            controller.randomCard3(),
           ],
         ),
         SizedBox(height: 20),
-        TimerBuilder.periodic(
-          Duration(seconds: 1),
-          builder: (context) {
-            // 한국 시간은 표준시간 + 9
-            DateTime date = DateTime.now().add(Duration(hours: 9));
-            return Text(
-              '${date.year}.${date.month}.${date.day}  ${date.hour} : ${date.minute} : ${date.second}',
-              style: TextStyle(fontSize: 20),
-            );
-          },
-        ),
+        controller.timeBuilder(),
         SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () { // context때문에 controller로 못 넘기는듯 
             if (controller.imagePath1.value == 'attachedfiles/tarotcard/대기카드.png' ||
                 controller.imagePath2.value ==
                     'attachedfiles/tarotcard/대기카드.png' ||
@@ -361,21 +291,54 @@ class CheckPage extends GetWidget<CheckController> {
               );
               return;
             }
-            Get.toNamed(Routes.RESULT_PAGE, arguments: [
-              controller.nicknameController.text,
-              controller.dropdownYear.value,
-              controller.dropdownMonth.value,
-              controller.dropdownDay.value,
-              controller.dropdownHour.value,
-              controller.dropdownMinute.value,
-              controller.imagePath1.value,
-              controller.imagePath2.value,
-              controller.imagePath3.value
-            ]);
+
+            DateTime birthDay = DateTime(
+              int.parse(controller.dropdownYear.value),
+              int.parse(controller.dropdownMonth.value),
+              int.parse(controller.dropdownDay.value),
+            );
+
+            Duration? birthTime;
+
+            if (controller.dropdownHour.value != '시' &&
+                controller.dropdownMinute.value != '분') {
+              birthTime = Duration(
+                hours: int.parse(controller.dropdownHour.value),
+                minutes: int.parse(controller.dropdownMinute.value),
+              );
+            }
+
+            Result result = Result(
+              name: controller.nicknameController.text,
+              birthDay: birthDay,
+              birthTime: birthTime,
+              birthPoint: null,
+              selectedCards: [
+                controller.imagePath1.value,
+                controller.imagePath2.value,
+                controller.imagePath3.value,
+              ],
+              cardPoint: null,
+              randomPoint: null,
+              lottoPoint: null,
+            );
+
+            Get.toNamed(Routes.RESULT_PAGE, arguments: result);
           },
           child: Text('NEXT!!'),
         ),
       ],
+    );
+  }
+
+  arrowBackButton() {
+    return Obx(
+      () => IconButton(
+          onPressed: controller.arrowButton,
+          icon: Icon(Icons.arrow_back),
+          color: controller.pageIndex.value == 0
+              ? Colors.purple
+              : Colors.purpleAccent),
     );
   }
 
@@ -384,26 +347,9 @@ class CheckPage extends GetWidget<CheckController> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          leading: Obx(
-            // 뒤로가기 버튼
-            () => IconButton(
-                onPressed: () {
-                  if (controller.checkController.hasClients) {
-                    if (controller.pageIndex.value == 1) {
-                      controller.checkController.animateToPage(0,
-                          duration: Duration(milliseconds: 400),
-                          curve: Curves.easeInOut);
-                      controller.pageIndex.value = 0;
-                    } else {
-                      Get.offAllNamed(Routes.INITIAL_PAGE);
-                    }
-                  }
-                },
-                icon: Icon(Icons.arrow_back),
-                color: controller.pageIndex.value == 0
-                    ? Colors.purple
-                    : Colors.purpleAccent),
-          ),
+          leading:
+              // 뒤로가기 버튼
+              arrowBackButton(),
         ),
         body: Column(
           children: [

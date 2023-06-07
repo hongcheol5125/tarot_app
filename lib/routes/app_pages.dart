@@ -7,8 +7,6 @@ import '../pages/1_page/initial_binding.dart';
 import '../pages/1_page/initial_page.dart';
 import '../pages/2_page/check_binding.dart';
 import '../pages/2_page/check_page.dart';
-import '../pages/3_page/card_binding.dart';
-import '../pages/3_page/card_page.dart';
 import '../pages/4_page/result_binding.dart';
 import '../pages/4_page/result_page.dart';
 import '../pages/5_page/lucky_box_binding.dart';
@@ -25,11 +23,6 @@ abstract class AppPages {
       name: Routes.CHECK_PAGE,
       page: () => CheckPage(),
       binding: CheckBinding(),
-    ),
-    GetPage(
-      name: Routes.CARD_PAGE,
-      page: () => CardPage(),
-      binding: CardBinding(),
     ),
     GetPage(
       name: Routes.RESULT_PAGE,
