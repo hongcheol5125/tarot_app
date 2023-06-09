@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tarot_app/pages/1_page/initial_page.dart';
 
 import '../../routes/app_routes.dart';
 import 'lucky_box_controller.dart';
@@ -12,39 +11,72 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
     return Column(
       children: [
         Expanded(
-          child: GridView.count(
-            primary: false,
-            padding: const EdgeInsets.all(20),
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            children: <Widget>[
-              Container(
-                padding: const EdgeInsets.all(8),
-                child: Text('Screen Shot'),
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                child: Text('Screen Shot'),
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                child: Text('Screen Shot'),
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                child: Text('Screen Shot'),
-              ),
-            ],
+          child: GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+            ),
+            itemCount: controller.captureData.length,
+            itemBuilder: (context, index) {
+              final reversedIndex = controller.captureData.length - 1 - index;
+              final captureButton = controller.captureData[reversedIndex];
+
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                    color: Colors.black,
+                  )),
+                  child: InkWell(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('팝업 창'),
+                            content: Image.memory(captureButton),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('내 앨범에 저장!'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('닫기'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Image.memory(captureButton),
+                  ),
+                ),
+              );
+            },
           ),
         ),
+        SizedBox(height: 30),
         ElevatedButton(
+          style: ButtonStyle(
+            minimumSize: MaterialStateProperty.all(Size(150, 150)), // 최소 크기 설정
+            padding: MaterialStateProperty.all(EdgeInsets.all(10)),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10), // 테두리 모양 설정
+      ),
+    ),
+          ),
           onPressed: () {
             Get.offAllNamed(Routes.INITIAL_PAGE);
           },
           child: Text('restart!!'),
         ),
-        SizedBox(height: 50)
+        SizedBox(height: 70)
       ],
     );
   }

@@ -1,9 +1,12 @@
 import 'dart:math';
-
+import 'dart:typed_data';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:tarot_app/model/result.dart';
 
 class ResultController extends GetxController {
+  ScreenshotController screenshotController = ScreenshotController();
   Random random = Random();
   late Result result;
   late int card1;
@@ -12,6 +15,11 @@ class ResultController extends GetxController {
   late int luckyPoint;
   Rx<bool> isVisible = Rx(false);
   late List<int> lottoNumbers;
+
+  final box = GetStorage();
+  String fileName = '';
+  late List<Uint8List> captureList;
+  List<Uint8List> noCaptureData = [];
 
   @override
   void onInit() {
@@ -92,15 +100,40 @@ class ResultController extends GetxController {
       return numbers;
     }
 
-     lottoNumbers = generateLottoNumbers(6);
+    lottoNumbers = generateLottoNumbers(6);
 
     print('lottoNumbers : $lottoNumbers');
 
     luckyPoint = result.birthPoint! + result.cardPoint! + result.randomPoint!;
     print('luckyPoint : ${luckyPoint}');
+
+    captureWidget();
   }
 
   showText() {
     isVisible.value = true;
+  }
+
+  captureWidget() async {
+    // 위젯 캡처를 위해 잠시 지연
+    try {
+      await Future.delayed(Duration(seconds: 10));
+
+      // 위젯을 캡처하여 이미지로 저장
+      final imageFile = await screenshotController.capture();
+      print('캡쳐 성공 : ${imageFile}');
+
+      if (box.read('captureList') == null) {
+        noCaptureData.add(imageFile!);
+        box.write('captureList', noCaptureData);
+      } else {
+        captureList = box.read('captureList');
+        captureList.add(imageFile!);
+        box.write('captureList', captureList);
+      }
+      print('getStorage에 데이터 저장 완료');
+    } catch (e) {
+      print('위젯 캡처 중 오류가 발생했습니다: $e');
+    }
   }
 }

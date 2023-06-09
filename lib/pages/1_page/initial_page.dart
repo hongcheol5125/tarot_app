@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../routes/app_routes.dart';
 import 'initial_controller.dart';
@@ -88,6 +89,10 @@ class InitialPage extends GetWidget<InitialController> {
                   },
                   child: Text('럭키상자'),
                 ),
+                ElevatedButton(onPressed: (){
+                  final box = GetStorage();
+                  box.erase();
+                }, child: Text('정보 모두 삭제'))
               ],
             ),
           )

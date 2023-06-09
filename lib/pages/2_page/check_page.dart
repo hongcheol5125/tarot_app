@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tarot_app/model/result.dart';
-import 'package:timer_builder/timer_builder.dart';
 
 import '../../routes/app_routes.dart';
 import '../../utils/birthday_list.dart';
