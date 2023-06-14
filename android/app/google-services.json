@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1045761315283",
+    "project_id": "tarot-app-kmong",
+    "storage_bucket": "tarot-app-kmong.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1045761315283:android:fe4b0a2b4472f98f199f26",
+        "android_client_info": {
+          "package_name": "com.example.tarot_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1045761315283-8339asqsovhngi4bblfnaejp6qlp4gkl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvJxlft-yh4EsY-OjdyzXwk_gUywdpZHc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1045761315283-8339asqsovhngi4bblfnaejp6qlp4gkl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

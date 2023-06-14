@@ -39,6 +39,10 @@ dependencies:
   get_storage: ^2.1.1
   timer_builder: ^2.0.0
   screenshot: ^2.1.0
+  image_gallery_saver: ^2.0.2
+  image_picker: ^0.8.8
+  firebase_core: ^2.14.0
+  cloud_firestore: ^4.8.1
   
 
 dev_dependencies:
