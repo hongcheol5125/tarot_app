@@ -50,7 +50,7 @@ class LuckyBoxController extends GetxController {
     String nicknameText = nickname.value;
     String passwordText = password.value;
     String dateText =
-        '${date.year.toString()}.${date.month.toString()}.${date.day.toString()} ${date.hour.toString()}:${date.minute.toString()}:${date.second.toString()}';
+        '${date.year.toString()}.${date.month.toString()}.${date.day.toString()} ${(date.hour + 9).toString()}:${date.minute.toString()}:${date.second.toString()}';
 
 if (nicknameText.isEmpty) {
       Get.snackbar('닉네임', '닉네임을 적어주세요');

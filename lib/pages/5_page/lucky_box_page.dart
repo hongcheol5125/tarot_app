@@ -143,10 +143,11 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                                   },
                                 ),
                                 TextButton(
-                                    onPressed: () async{
+                                    onPressed: () async {
                                       controller.createData(context);
                                       setState((){});
                                       Navigator.of(context).pop();
+                                      
                                     },
                                     child: Text('완료')),
                                 TextButton(
@@ -169,33 +170,35 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
             ),
           ),
           SizedBox(height: 10),
-          Expanded(
-            child: ListView.builder(
-              itemCount: controller.documents.value.length,
-              itemBuilder: (context, index) {
-                final sequentialNumber = index + 1;
-                final titleText = '$sequentialNumber. ';
-                DocumentSnapshot document = controller.documents.value[index];
-                // 이곳에서 document 데이터를 활용하여 UI를 구성
-                String title = document['title'] as String;
-                String nickname = document['nickname'] as String;
-                String date = document['date'] as String;
-                return ListTile(
-                  key: ValueKey(index),
-                  title: Row(
-                    children: [
-                      Text(titleText),
-                      Text(title),
-                    ],
-                  ),
-                  subtitle: Row(
-                    children: [
-                      Text(nickname),
-                      Text(date),
-                    ],
-                  ),
-                );
-              },
+          Obx(
+            () => Expanded(
+              child: ListView.builder(
+                itemCount: controller.documents.value.length,
+                itemBuilder: (context, index) {
+                  final sequentialNumber = index + 1;
+                  final titleText = '$sequentialNumber. ';
+                  DocumentSnapshot document = controller.documents.value[index];
+                  // 이곳에서 document 데이터를 활용하여 UI를 구성
+                  String title = document['title'] as String;
+                  String nickname = document['nickname'] as String;
+                  String date = document['date'] as String;
+                  return ListTile(
+                    key: ValueKey(index),
+                    title: Row(
+                      children: [
+                        Text(titleText),
+                        Text(title),
+                      ],
+                    ),
+                    subtitle: Row(
+                      children: [
+                        Text(nickname),
+                        Text(date),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
           Padding(
