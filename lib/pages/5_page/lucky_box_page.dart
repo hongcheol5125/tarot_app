@@ -106,31 +106,38 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                           builder:
                               (BuildContext context, StateSetter setState) {
                             return AlertDialog(
-                              title: Column(
-                                children: [
-                                  TextField(
-                                    onChanged: (value) =>
-                                        controller.nickname.value = value,
-                                    decoration: InputDecoration(
-                                      labelText: '닉네임',
+                              content: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    TextField(
+                                      onChanged: (value) => controller
+                                          .post.value.nickName = value,
+                                      decoration: InputDecoration(
+                                        labelText: '닉네임',
+                                      ),
                                     ),
-                                  ),
-                                  TextField(
-                                    onChanged: (value) =>
-                                        controller.title.value = value,
-                                    decoration: InputDecoration(
-                                      labelText: '제목',
+                                    TextField(
+                                      onChanged: (value) =>
+                                          controller.post.value.title = value,
+                                      decoration: InputDecoration(
+                                        labelText: '제목',
+                                      ),
                                     ),
-                                  ),
-                                  TextField(
-                                    keyboardType: TextInputType.number,
-                                    onChanged: (value) =>
-                                        controller.password.value = value,
-                                    decoration: InputDecoration(
-                                      labelText: '비밀번호(4자리)',
+                                    TextField(
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) => controller
+                                          .post.value.password = value,
+                                      decoration: InputDecoration(
+                                        labelText: '비밀번호(4자리)',
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                    Obx(() => controller.selectedImage.value ==
+                                            null
+                                        ? Text('이미지를 선택하세요')
+                                        : Image.file(
+                                            controller.selectedImage.value!)),
+                                  ],
+                                ),
                               ),
                               actions: [
                                 TextButton(
@@ -138,18 +145,24 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                                   onPressed: () async {
                                     File? file =
                                         await MediaPicker.singlePhoto();
-                                    if (file != null) {}
-                                    setState(() {});
+                                    if (file != null) {
+                                      controller.selectedImage.value = file;
+
+                                      setState(() {});
+                                    }
                                   },
                                 ),
                                 TextButton(
-                                    onPressed: () async {
-                                      controller.createData(context);
-                                      setState((){});
-                                      Navigator.of(context).pop();
-                                      
-                                    },
-                                    child: Text('완료')),
+                                  onPressed: () async {
+                                    await controller.uploadImage(
+                                        controller.selectedImage.value!);
+                                    controller.createData(context);
+
+                                    setState(() {});
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('완료'),
+                                ),
                                 TextButton(
                                   child: Text('취소'),
                                   onPressed: () {
@@ -178,23 +191,89 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                   final sequentialNumber = index + 1;
                   final titleText = '$sequentialNumber. ';
                   DocumentSnapshot document = controller.documents.value[index];
-                  // 이곳에서 document 데이터를 활용하여 UI를 구성
                   String title = document['title'] as String;
                   String nickname = document['nickname'] as String;
-                  String date = document['date'] as String;
-                  return ListTile(
-                    key: ValueKey(index),
-                    title: Row(
-                      children: [
-                        Text(titleText),
-                        Text(title),
-                      ],
-                    ),
-                    subtitle: Row(
-                      children: [
-                        Text(nickname),
-                        Text(date),
-                      ],
+                  int date = int.parse(document['date']);
+                  String realDate = DateTime.fromMillisecondsSinceEpoch(date)
+                      .toUtc()
+                      .toString();
+                  String removeMinority = realDate.replaceRange(
+                      realDate.length - 5, realDate.length, '');
+                  final realRealDate = removeMinority;
+                  String img_url = document['img_url'] as String;
+
+                  return TextButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(title),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Nickname: $nickname'),
+                                Text('Date: $realRealDate'),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        showDialog(context: context, builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Image.network(img_url),
+                                          );
+                                        });
+                                      },
+                                      icon: Container(
+                                        width: 200,
+                                        height: 100,
+                                        child: Image.network(img_url),
+                                      ),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('수정'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('닫기'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: ListTile(
+                      key: ValueKey(index),
+                      title: Row(
+                        children: [
+                          Text(titleText),
+                          Text(title),
+                          SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: Image.network(img_url),
+                          ),
+                        ],
+                      ),
+                      subtitle: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(nickname),
+                          Text(realRealDate),
+                        ],
+                      ),
                     ),
                   );
                 },

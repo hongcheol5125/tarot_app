@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:get/get.dart';
@@ -125,11 +126,18 @@ class ResultController extends GetxController {
 
       if (box.read('captureList') == null) {
         noCaptureData.add(imageFile!);
-        box.write('captureList', noCaptureData);
+        List<dynamic> encodedList =
+            noCaptureData.map((data) => base64Encode(data)).toList();
+        box.write('captureList', encodedList);
       } else {
-        captureList = box.read('captureList');
-        captureList.add(imageFile!);
-        box.write('captureList', captureList);
+        List<dynamic> encodedList = box.read('captureList');
+        List<Uint8List> dataList = encodedList
+            .map((encodedData) => base64Decode(encodedData))
+            .toList();
+        dataList.add(imageFile!);
+        List<dynamic> _encodedList =
+            dataList.map((data) => base64Encode(data)).toList();
+        box.write('captureList', _encodedList);
       }
       print('getStorage에 데이터 저장 완료');
     } catch (e) {
