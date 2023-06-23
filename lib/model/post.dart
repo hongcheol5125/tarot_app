@@ -4,20 +4,21 @@ part 'post.g.dart';
 
 @JsonSerializable()
 class Post {
-  String? nickName;
-  String? title;
-  String? password;
-  List<dynamic>? images = [];
+  String nickName;
+  String title;
+  String password;
+  List<dynamic> images;
   int views;
-  int? date = DateTime.now().millisecondsSinceEpoch;
+  int date;
 
-  Post(
-      {this.title,
-      this.nickName,
-      this.password,
-      this.images = const [],
-      this.views = 0,
-      this.date});
+  Post({
+    required this.title,
+    required this.nickName,
+    required this.password,
+    required this.images,
+    required this.views,
+    required this.date,
+  });
 
   factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
   Map<String, dynamic> toJson() => _$PostToJson(this);
