@@ -28,6 +28,9 @@ class LuckyBoxController extends GetxController {
   Rx<List<DocumentSnapshot>> documents = Rx([]);
   // Rx<File?> selectedImage = Rx(File());
   final selectedImage = Rx<File?>(null);
+  Rx<bool> isEnd = Rx(false);
+  Rx<bool> isRequested = Rx(false);
+  
 
   @override
   void onInit() {
@@ -84,7 +87,7 @@ class LuckyBoxController extends GetxController {
       Get.snackbar('이미지', '이미지를 등록해주세요');
       return;
     }
-
+    
     Post post = Post(
       title: titleText,
       nickName: nicknameText,
@@ -122,6 +125,7 @@ class LuckyBoxController extends GetxController {
     //   }
     // }
   }
+  
 
 // 데이터 변경을 구독하고 변경 감지되면 변수 업데이트 함
   // void subscribeToDataChanges() {
@@ -132,6 +136,7 @@ class LuckyBoxController extends GetxController {
   // }
 
   int perPage = 5;
+  int page = 0;
 
   // 처음 페이지 나왔을 때 posts 콜렉션에서 데이터를 내림차순으로 2개씩 게시판 목록에 띄움
   void initialData() async {
@@ -147,9 +152,29 @@ class LuckyBoxController extends GetxController {
     }
   }
 
+// 154번줄 ~196번줄까지 모두 기존 데이터 불러오기를 위한 녀석들!(luckyBoxPage의 334줄에 불러옴)
+  final ScrollController scrollController = ScrollController(); // 기존 데이터 불러오기 controller
+  bool isLoading = false; // 중복 호출 방지를 위한 변수
+
+  listenScroll() {
+    scrollController.addListener(scrollListener);
+  }
+
+  void scrollListener() {
+    if (!isLoading &&
+        scrollController.position.pixels ==
+            scrollController.position.maxScrollExtent) {
+      // Reached the bottom
+      loadMoreOld(); // 지난 데이터를 추가하는 메서드 호출
+    }
+  }
+
   // perPage수 만큼 다 보여주고 스크롤을 아래로 내릴 때, 더 오래된 데이터를 불러오는 메소드
   loadMoreOld() async {
     try {
+      if (isLoading) return; // 이미 호출 중인 경우 중복 호출 방지
+
+      isLoading = true; // 호출 시작 : 이 상태이면 scrollListener()가 다시 실행(중복)될 일을 막을 수 있다.
       //querySnapshot은 .data()를 붙여줘야 비로소 거기 안의 데이터를 가져올 수 있다.
       var json = documents.value.last.data()
           as Map<String, dynamic>; // .last는 List 중 가장 마지막 데이터를 가져옴
@@ -162,9 +187,13 @@ class LuckyBoxController extends GetxController {
           .limit(perPage)
           .get();
 
-      documents.value.addAll(querySnapshot.docs);
+      documents.update((val) {
+        documents.value.addAll(querySnapshot.docs);
+      });
     } catch (e) {
       print(e);
+    } finally {
+      isLoading = false;
     }
   }
 
@@ -189,9 +218,17 @@ class LuckyBoxController extends GetxController {
       /// 3. luckyBoxPage의 ListView.Builder에 breakPoint 걸어서 가져온 데이터를 가지고 다시 리빌드 해주는지 확인함
       /// 그 결과 3.번이 문제여서 아래처럼 진행해주니 해결됨
       /// insertAll은 List의 맨 처음에 집어넣음 => 근데 Obx가 바뀐걸 인식을 못해서 documents.update 안에 넣으니 스크롤 아래로 당기니까 업데이트 됨
-      documents.update((val) {
-        documents.value.insertAll(0, querySnapshot.docs);
-      });
+      // documents.update((val) {
+      //   documents.value.insertAll(0, querySnapshot.docs);
+      // });
+      List<DocumentSnapshot> newDocs = querySnapshot.docs;
+    List<DocumentSnapshot> currentDocs = documents.value;
+
+    List<DocumentSnapshot> updatedDocs = [];
+    updatedDocs.addAll(newDocs);
+    updatedDocs.addAll(currentDocs);
+
+    documents.value = updatedDocs;
     } catch (e) {
       print(e);
     }
@@ -266,4 +303,12 @@ class LuckyBoxController extends GetxController {
         .then((_) => print('View count incremented successfully.'))
         .catchError((error) => print('Failed to increment view count: $error'));
   }
+
+  // 게시물 수정
+  Future<void> updatePostData(String documentId, Map<String, dynamic> newData) {
+  return FirebaseFirestore.instance
+      .collection('posts')
+      .doc(documentId)
+      .update(newData);
+}
 }

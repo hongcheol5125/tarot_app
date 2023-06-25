@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 List<String> images = [
   'attachedfiles/tarotcard/1-1.jpg',
   'attachedfiles/tarotcard/1-2.jpg',
