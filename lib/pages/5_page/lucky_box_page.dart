@@ -226,7 +226,7 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
 
                     String title = post.title;
                     String nickName = post.nickName;
-                    int date = post.date + 9;
+                    int date = post.date;
                     DateTime _date = DateTime.fromMillisecondsSinceEpoch(date);
                     String showDate =
                         '${_date.year}년${_date.month}월${_date.day}일 ${_date.hour}:${_date.minute}';
@@ -351,7 +351,7 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                     // String nickName = post.nickName;
                     // int date = post.date;
                     DateTime _date =
-                        DateTime.fromMillisecondsSinceEpoch(post.date + 9);
+                        DateTime.fromMillisecondsSinceEpoch(post.date);
                     String showDate =
                         '${_date.year}년${_date.month}월${_date.day}일 ${_date.hour}:${_date.minute}';
 

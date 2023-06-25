@@ -70,7 +70,9 @@ class LuckyBoxController extends GetxController {
     String nicknameText = nicknameC.text;
     String passwordText = pwC.text;
 
-    int date = DateTime.now().millisecondsSinceEpoch + 9;
+    // int koreaTime = DateTime.now().toUtc().add(const Duration(hours: 9)).millisecondsSinceEpoch; // KST(한국 표준시)로 변환
+
+    int date = DateTime.now().toUtc().add(const Duration(hours: 9)).millisecondsSinceEpoch; // KST(한국 표준시)로 변환
 
     String? urlText =
         await uploadImage(selectedImage.value!, fileName: date.toString());
@@ -378,7 +380,7 @@ class LuckyBoxController extends GetxController {
                       Get.snackbar('비밀번호', '비밀번호가 틀렸습니다');
                       return;
                     }
-                    int date = DateTime.now().millisecondsSinceEpoch + 9;
+                    int date = DateTime.now().millisecondsSinceEpoch;
 
                     String? urlText = await uploadImage(selectedImage.value!,
                         fileName: date.toString());
@@ -387,6 +389,7 @@ class LuckyBoxController extends GetxController {
                       'title': titleChangeC.text,
                       'nickName': nicknameChangeC.text,
                       'images': [urlText],
+                      'date' : DateTime.now().toUtc().add(const Duration(hours: 9)).millisecondsSinceEpoch,
                     };
                     updatePostData(post.date.toString(), newData).then((_) {
                       Navigator.of(context).pop();
