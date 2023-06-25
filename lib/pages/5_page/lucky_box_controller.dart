@@ -20,6 +20,9 @@ class LuckyBoxController extends GetxController {
   TextEditingController nicknameC = TextEditingController();
   TextEditingController titleC = TextEditingController();
   TextEditingController pwC = TextEditingController();
+  TextEditingController nicknameChangeC = TextEditingController();
+  TextEditingController titleChangeC = TextEditingController();
+  TextEditingController pwCheckC = TextEditingController();
 
   // Rx<String> title = Rx(''); // 23~26째 줄을 post클래스로 대체할 수 있지 않을까?
   // Rx<String> nickname = Rx(''); // 23~26째 줄을 post클래스로 대체할 수 있지 않을까?
@@ -64,19 +67,15 @@ class LuckyBoxController extends GetxController {
 
   Future<void> onPressedUploadButton(BuildContext context) async {
     String titleText = titleC.text;
-    
     String nicknameText = nicknameC.text;
-    
-    
     String passwordText = pwC.text;
-    
 
-    int date = DateTime.now().millisecondsSinceEpoch;
+    int date = DateTime.now().millisecondsSinceEpoch + 9;
 
     String? urlText =
         await uploadImage(selectedImage.value!, fileName: date.toString());
     if (urlText == null) {
-      Get.snackbar('이미지', '이미지를 등록해주세요');
+      Get.snackbar('이미지', '이미지를 한 개 이상 등록해주세요');
       return;
     }
 
@@ -309,11 +308,6 @@ class LuckyBoxController extends GetxController {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String newTitle = post.title; // 기존 데이터 초기값으로 설정
-        String newNickName = post.nickName;
-        String checkPassword = post.password;
-        // 추가로 수정할 필드들을 선언하고 초기값 설정
-
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
@@ -324,11 +318,7 @@ class LuckyBoxController extends GetxController {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          newTitle = value;
-                        });
-                      },
+                      controller: titleChangeC,
                       decoration: InputDecoration(
                         labelText: '제목',
                       ),
@@ -336,11 +326,7 @@ class LuckyBoxController extends GetxController {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10),
                       child: TextField(
-                        onChanged: (value) {
-                          setState(() {
-                            newNickName = value;
-                          });
-                        },
+                        controller: nicknameChangeC,
                         decoration: InputDecoration(
                           labelText: '닉네임',
                         ),
@@ -350,11 +336,7 @@ class LuckyBoxController extends GetxController {
                         ? Text('이미지를 선택하세요')
                         : Image.file(selectedImage.value!)),
                     TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          checkPassword = value;
-                        });
-                      },
+                      controller: pwCheckC,
                       decoration: InputDecoration(
                         labelText: '비밀번호',
                       ),
@@ -377,70 +359,40 @@ class LuckyBoxController extends GetxController {
                 ),
                 TextButton(
                   onPressed: () async {
-                    int date = DateTime.now().millisecondsSinceEpoch;
-                    if (selectedImage.value == null) {
-                      Get.snackbar('이미지', '이미지를 선택해 주세요.');
-                    } else {
-                      String? urlText = await uploadImage(selectedImage.value!,
-                          fileName: date.toString());
-                      if (urlText == null) {
-                        Get.snackbar('이미지', '이미지를 등록해주세요');
-                        return;
-                      }
-                      if (newTitle != '' &&
-                          newNickName != '' &&
-                          checkPassword == //여기서 newTitle, newnickName에 대해 써봤자이다
-                              post.password &&
-                          selectedImage.value != null) {
-                        // 비밀번호가 일치하면 수정을 진행
-                        // 수정한 데이터를 Firestore에 업데이트
-                        final newData = {
-                          'title': newTitle,
-                          'nickName': newNickName,
-                          'images': [urlText],
-                        };
-                        updatePostData(post.date.toString(), newData).then((_) {
-                          Navigator.of(context).pop();
-                        }).catchError((error) {
-                          print('Failed to update post: $error');
-                        });
-                      } else {
-                        // 비밀번호가 일치하지 않으면 에러 메시지 표시
-                        // if(title == ''){
-                        //     Get.snackbar('제목', '제목을 입력하세요');
-                        //   }else if(nickName == ''){
-                        //      Get.snackbar('닉네임', '닉네임을 입력하세요');
-                        //   }else
-                        if (selectedImage.value != null) {
-                          Get.snackbar('이미지', '이미지를 선택하세요');
-                        } else {
-                          Get.snackbar('비밀번호', '비밀번호가 일치하지 않습니다');
-                        }
-                        // checkPassword !=
-                        //   post.password
-                        // showDialog(
-                        //   context: context,
-                        //   builder:
-                        //       (BuildContext context) {
-                        //     return AlertDialog(
-                        //       title: Text('오류'),
-                        //       content: Text(
-                        //           '비밀번호가 일치하지 않습니다.'),
-                        //       actions: [
-                        //         TextButton(
-                        //           onPressed: () {
-                        //             Navigator.of(
-                        //                     context)
-                        //                 .pop();
-                        //           },
-                        //           child: Text('닫기'),
-                        //         ),
-                        //       ],
-                        //     );
-                        //   },
-                        // );
-                      }
+                    String titleChangeText = titleChangeC.text;
+                    if (titleChangeText.isEmpty) {
+                      Get.snackbar('제목', '제목을 적어주세요');
+                      return;
                     }
+                    String nicknameChangeText = nicknameChangeC.text;
+                    if (nicknameChangeText.isEmpty) {
+                      Get.snackbar('닉네임', '닉네임을 적어주세요');
+                      return; // return을 써주면 if문 읽고 빠져나와서 그 다음은 안읽는다.
+                    }
+                    if (selectedImage.value == null) {
+                      Get.snackbar('이미지', '이미지를 한 개 이상 선택해 주세요');
+                      return;
+                    }
+                    String passwordCheckText = pwCheckC.text;
+                    if (passwordCheckText != post.password) {
+                      Get.snackbar('비밀번호', '비밀번호가 틀렸습니다');
+                      return;
+                    }
+                    int date = DateTime.now().millisecondsSinceEpoch + 9;
+
+                    String? urlText = await uploadImage(selectedImage.value!,
+                        fileName: date.toString());
+
+                    final newData = {
+                      'title': titleChangeC.text,
+                      'nickName': nicknameChangeC.text,
+                      'images': [urlText],
+                    };
+                    updatePostData(post.date.toString(), newData).then((_) {
+                      Navigator.of(context).pop();
+                    }).catchError((error) {
+                      print('Failed to update post: $error');
+                    });
                   },
                   child: Text('저장'),
                 ),

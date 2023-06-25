@@ -152,18 +152,18 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                                 ),
                                 TextButton(
                                   onPressed: () async {
-                                    String titleText = controller.titleC.text;
-                                    if (titleText.isEmpty) {
-                                      Get.snackbar('제목', '제목을 적어주세요');
-                                      return; // return을 써주면 if문 읽고 빠져나와서 그 다음은 안읽는다.
-                                    }
                                     String nicknameText = controller.nicknameC.text;
                                     if (nicknameText.isEmpty) {
                                       Get.snackbar('닉네임', '닉네임을 적어주세요');
-                                      return;
+                                      return;    // return을 써주면 if문 읽고 빠져나와서 그 다음은 안읽는다.
+                                    }
+                                    String titleText = controller.titleC.text;
+                                    if (titleText.isEmpty) {
+                                      Get.snackbar('제목', '제목을 적어주세요');
+                                      return; 
                                     }
                                     if (controller.selectedImage.value == null) {
-                                      Get.snackbar('이미지', '이미지를 선택해 주세요.');
+                                      Get.snackbar('이미지', '이미지를 한 개 이상 선택해 주세요.');
                                       return;
                                     }
                                     String passwordText = controller.pwC.text;
@@ -427,6 +427,7 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                             // 수정 버튼
                             TextButton(
                               onPressed: () async {
+                                
                                 await controller.onPressedChangeButton(
                                     context, post);
                               },
