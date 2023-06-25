@@ -152,16 +152,30 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                                 ),
                                 TextButton(
                                   onPressed: () async {
-                                    if (controller.selectedImage.value ==
-                                        null) {
-                                      Get.snackbar('이미지', '이미지를 선택해 주세요.');
-                                    } else {
-                                      await controller
-                                          .onPressedUploadButton(context);
-
-                                      setState(() {});
-                                      Navigator.of(context).pop();
+                                    String titleText = controller.titleC.text;
+                                    if (titleText.isEmpty) {
+                                      Get.snackbar('제목', '제목을 적어주세요');
+                                      return; // return을 써주면 if문 읽고 빠져나와서 그 다음은 안읽는다.
                                     }
+                                    String nicknameText = controller.nicknameC.text;
+                                    if (nicknameText.isEmpty) {
+                                      Get.snackbar('닉네임', '닉네임을 적어주세요');
+                                      return;
+                                    }
+                                    if (controller.selectedImage.value == null) {
+                                      Get.snackbar('이미지', '이미지를 선택해 주세요.');
+                                      return;
+                                    }
+                                    String passwordText = controller.pwC.text;
+                                    if (passwordText.length != 4) {
+                                      Get.snackbar('비밀번호', '비밀번호 4자리를 적어주세요');
+                                      return;
+                                    }
+                                    await controller
+                                        .onPressedUploadButton(context);
+
+                                    setState(() {});
+                                    Navigator.of(context).pop();
                                   },
                                   child: Text('완료'),
                                 ),
@@ -212,7 +226,7 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
 
                     String title = post.title;
                     String nickName = post.nickName;
-                    int date = post.date;
+                    int date = post.date + 9;
                     DateTime _date = DateTime.fromMillisecondsSinceEpoch(date);
                     String showDate =
                         '${_date.year}년${_date.month}월${_date.day}일 ${_date.hour}:${_date.minute}';
@@ -262,12 +276,6 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
-                                  child: Text('수정'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
                                   child: Text('닫기'),
                                 ),
                               ],
@@ -285,6 +293,16 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                               height: 30,
                               width: 30,
                               child: Image.network(imgUrl),
+                            ),
+                            SizedBox(width: 150),
+
+                            // 수정 버튼
+                            TextButton(
+                              onPressed: () async {
+                                await controller.onPressedChangeButton(
+                                    context, post);
+                              },
+                              child: Text('수정'),
                             ),
                           ],
                         ),
@@ -328,11 +346,12 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                         dynamic>; // firestore에 저장된 데이터들을 가져와서 json이라는 변수에 담음
                     Post post = Post.fromJson(json);
 
-                    String title = post.title;
-                    String password = post.password;
-                    String nickName = post.nickName;
-                    int date = post.date;
-                    DateTime _date = DateTime.fromMillisecondsSinceEpoch(date);
+                    // String title = post.title;
+                    // String password = post.password;
+                    // String nickName = post.nickName;
+                    // int date = post.date;
+                    DateTime _date =
+                        DateTime.fromMillisecondsSinceEpoch(post.date + 9);
                     String showDate =
                         '${_date.year}년${_date.month}월${_date.day}일 ${_date.hour}:${_date.minute}';
 
@@ -348,13 +367,13 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text(title),
+                              title: Text(post.title),
                               content: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      'Nickname: ${nickName.substring(0, 1)}**'),
+                                      'Nickname: ${post.nickName.substring(0, 1)}**'),
                                   Text('Date: $showDate'),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -397,7 +416,7 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                         title: Row(
                           children: [
                             Text(titleText),
-                            Text(title),
+                            Text(post.title),
                             SizedBox(
                               height: 30,
                               width: 30,
@@ -407,172 +426,18 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
 
                             // 수정 버튼
                             TextButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    String newTitle = title; // 기존 데이터 초기값으로 설정
-                                    String newNickName = nickName;
-                                    String checkPassword = password;
-                                    // 추가로 수정할 필드들을 선언하고 초기값 설정
-
-                                    return StatefulBuilder(
-                                      builder: (BuildContext context,
-                                          StateSetter setState) {
-                                        return AlertDialog(
-                                          title: Text('수정'),
-                                          content: SingleChildScrollView(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                TextField(
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      newTitle = value;
-                                                    });
-                                                  },
-                                                  decoration: InputDecoration(
-                                                    labelText: '제목',
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 10),
-                                                  child: TextField(
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        newNickName = value;
-                                                      });
-                                                    },
-                                                    decoration: InputDecoration(
-                                                      labelText: '닉네임',
-                                                    ),
-                                                  ),
-                                                ),
-                                                Obx(() => controller
-                                                            .selectedImage
-                                                            .value ==
-                                                        null
-                                                    ? Text('이미지를 선택하세요')
-                                                    : Image.file(controller
-                                                        .selectedImage.value!)),
-                                                TextField(
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      checkPassword = value;
-                                                    });
-                                                  },
-                                                  decoration: InputDecoration(
-                                                    labelText: '비밀번호',
-                                                  ),
-                                                ),
-                                                // 추가로 수정할 필드들을 TextField로 추가
-                                              ],
-                                            ),
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              child: Text('이미지 선택'),
-                                              onPressed: () async {
-                                                File? file = await MediaPicker
-                                                    .singlePhoto();
-                                                if (file != null) {
-                                                  controller.selectedImage
-                                                      .value = file;
-
-                                                  setState(() {});
-                                                }
-                                              },
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                if (newTitle != '' && newNickName != '' && checkPassword == //여기서 newTitle, newnickName에 대해 써봤자이다
-                                                    post.password && controller.selectedImage
-                                                      .value != null) {
-                                                  // 비밀번호가 일치하면 수정을 진행
-                                                  // 수정한 데이터를 Firestore에 업데이트
-                                                  final newData = {
-                                                    'title': newTitle,
-                                                    'nickName': newNickName,
-                                                    'images': [
-                                                      controller
-                                                          .selectedImage.value.toString()
-                                                    ],
-                                                  };
-                                                  controller
-                                                      .updatePostData(
-                                                          post.date.toString(),
-                                                          newData)
-                                                      .then((_) {
-                                                    Navigator.of(context).pop();
-                                                  }).catchError((error) {
-                                                    print(
-                                                        'Failed to update post: $error');
-                                                  });
-                                                } else {
-                                                  // 비밀번호가 일치하지 않으면 에러 메시지 표시
-                                                  // if(title == ''){
-                                                  //     Get.snackbar('제목', '제목을 입력하세요');
-                                                  //   }else if(nickName == ''){
-                                                  //      Get.snackbar('닉네임', '닉네임을 입력하세요');
-                                                  //   }else
-                                                     if(controller.selectedImage
-                                                      .value != null) {
-                                                      Get.snackbar('이미지', '이미지를 선택하세요');
-                                                    }else{
-                                                      Get.snackbar('비밀번호', '비밀번호가 일치하지 않습니다');
-                                                    }
-                                                  // checkPassword !=
-                                                  //   post.password
-                                                  // showDialog(
-                                                  //   context: context,
-                                                  //   builder:
-                                                  //       (BuildContext context) {
-                                                  //     return AlertDialog(
-                                                  //       title: Text('오류'),
-                                                  //       content: Text(
-                                                  //           '비밀번호가 일치하지 않습니다.'),
-                                                  //       actions: [
-                                                  //         TextButton(
-                                                  //           onPressed: () {
-                                                  //             Navigator.of(
-                                                  //                     context)
-                                                  //                 .pop();
-                                                  //           },
-                                                  //           child: Text('닫기'),
-                                                  //         ),
-                                                  //       ],
-                                                  //     );
-                                                  //   },
-                                                  // );
-                                                }
-                                              },
-                                              child: Text('저장'),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: Text('닫기'),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
+                              onPressed: () async {
+                                await controller.onPressedChangeButton(
+                                    context, post);
                               },
                               child: Text('수정'),
-                            )
+                            ),
                           ],
                         ),
                         subtitle: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('${nickName.substring(0, 1)}**'),
+                            Text('${post.nickName.substring(0, 1)}**'),
                             Text(showDate),
                           ],
                         ),

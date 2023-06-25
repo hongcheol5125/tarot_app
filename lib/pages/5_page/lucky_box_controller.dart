@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:tarot_app/model/post.dart';
+import 'package:tarot_app/utils/image_selector.dart';
 
 class LuckyBoxController extends GetxController {
   late PageController luckyController;
@@ -30,7 +31,6 @@ class LuckyBoxController extends GetxController {
   final selectedImage = Rx<File?>(null);
   Rx<bool> isEnd = Rx(false);
   Rx<bool> isRequested = Rx(false);
-  
 
   @override
   void onInit() {
@@ -64,20 +64,12 @@ class LuckyBoxController extends GetxController {
 
   Future<void> onPressedUploadButton(BuildContext context) async {
     String titleText = titleC.text;
-    if (titleText.isEmpty) {
-      Get.snackbar('제목', '제목을 적어주세요');
-      return;
-    }
+    
     String nicknameText = nicknameC.text;
-    if (nicknameText.isEmpty) {
-      Get.snackbar('닉네임', '닉네임을 적어주세요');
-      return;
-    }
+    
+    
     String passwordText = pwC.text;
-    if (passwordText.length != 4) {
-      Get.snackbar('비밀번호', '비밀번호 4자리를 적어주세요');
-      return;
-    }
+    
 
     int date = DateTime.now().millisecondsSinceEpoch;
 
@@ -87,7 +79,7 @@ class LuckyBoxController extends GetxController {
       Get.snackbar('이미지', '이미지를 등록해주세요');
       return;
     }
-    
+
     Post post = Post(
       title: titleText,
       nickName: nicknameText,
@@ -125,7 +117,6 @@ class LuckyBoxController extends GetxController {
     //   }
     // }
   }
-  
 
 // 데이터 변경을 구독하고 변경 감지되면 변수 업데이트 함
   // void subscribeToDataChanges() {
@@ -153,7 +144,8 @@ class LuckyBoxController extends GetxController {
   }
 
 // 154번줄 ~196번줄까지 모두 기존 데이터 불러오기를 위한 녀석들!(luckyBoxPage의 334줄에 불러옴)
-  final ScrollController scrollController = ScrollController(); // 기존 데이터 불러오기 controller
+  final ScrollController scrollController =
+      ScrollController(); // 기존 데이터 불러오기 controller
   bool isLoading = false; // 중복 호출 방지를 위한 변수
 
   listenScroll() {
@@ -174,7 +166,8 @@ class LuckyBoxController extends GetxController {
     try {
       if (isLoading) return; // 이미 호출 중인 경우 중복 호출 방지
 
-      isLoading = true; // 호출 시작 : 이 상태이면 scrollListener()가 다시 실행(중복)될 일을 막을 수 있다.
+      isLoading =
+          true; // 호출 시작 : 이 상태이면 scrollListener()가 다시 실행(중복)될 일을 막을 수 있다.
       //querySnapshot은 .data()를 붙여줘야 비로소 거기 안의 데이터를 가져올 수 있다.
       var json = documents.value.last.data()
           as Map<String, dynamic>; // .last는 List 중 가장 마지막 데이터를 가져옴
@@ -222,13 +215,13 @@ class LuckyBoxController extends GetxController {
       //   documents.value.insertAll(0, querySnapshot.docs);
       // });
       List<DocumentSnapshot> newDocs = querySnapshot.docs;
-    List<DocumentSnapshot> currentDocs = documents.value;
+      List<DocumentSnapshot> currentDocs = documents.value;
 
-    List<DocumentSnapshot> updatedDocs = [];
-    updatedDocs.addAll(newDocs);
-    updatedDocs.addAll(currentDocs);
+      List<DocumentSnapshot> updatedDocs = [];
+      updatedDocs.addAll(newDocs);
+      updatedDocs.addAll(currentDocs);
 
-    documents.value = updatedDocs;
+      documents.value = updatedDocs;
     } catch (e) {
       print(e);
     }
@@ -306,9 +299,162 @@ class LuckyBoxController extends GetxController {
 
   // 게시물 수정
   Future<void> updatePostData(String documentId, Map<String, dynamic> newData) {
-  return FirebaseFirestore.instance
-      .collection('posts')
-      .doc(documentId)
-      .update(newData);
-}
+    return FirebaseFirestore.instance
+        .collection('posts')
+        .doc(documentId)
+        .update(newData);
+  }
+
+  Future<void> onPressedChangeButton(context, Post post) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String newTitle = post.title; // 기존 데이터 초기값으로 설정
+        String newNickName = post.nickName;
+        String checkPassword = post.password;
+        // 추가로 수정할 필드들을 선언하고 초기값 설정
+
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return AlertDialog(
+              title: Text('수정'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          newTitle = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        labelText: '제목',
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            newNickName = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: '닉네임',
+                        ),
+                      ),
+                    ),
+                    Obx(() => selectedImage.value == null
+                        ? Text('이미지를 선택하세요')
+                        : Image.file(selectedImage.value!)),
+                    TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          checkPassword = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        labelText: '비밀번호',
+                      ),
+                    ),
+                    // 추가로 수정할 필드들을 TextField로 추가
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  child: Text('이미지 선택'),
+                  onPressed: () async {
+                    File? file = await MediaPicker.singlePhoto();
+                    if (file != null) {
+                      selectedImage.value = file;
+
+                      setState(() {});
+                    }
+                  },
+                ),
+                TextButton(
+                  onPressed: () async {
+                    int date = DateTime.now().millisecondsSinceEpoch;
+                    if (selectedImage.value == null) {
+                      Get.snackbar('이미지', '이미지를 선택해 주세요.');
+                    } else {
+                      String? urlText = await uploadImage(selectedImage.value!,
+                          fileName: date.toString());
+                      if (urlText == null) {
+                        Get.snackbar('이미지', '이미지를 등록해주세요');
+                        return;
+                      }
+                      if (newTitle != '' &&
+                          newNickName != '' &&
+                          checkPassword == //여기서 newTitle, newnickName에 대해 써봤자이다
+                              post.password &&
+                          selectedImage.value != null) {
+                        // 비밀번호가 일치하면 수정을 진행
+                        // 수정한 데이터를 Firestore에 업데이트
+                        final newData = {
+                          'title': newTitle,
+                          'nickName': newNickName,
+                          'images': [urlText],
+                        };
+                        updatePostData(post.date.toString(), newData).then((_) {
+                          Navigator.of(context).pop();
+                        }).catchError((error) {
+                          print('Failed to update post: $error');
+                        });
+                      } else {
+                        // 비밀번호가 일치하지 않으면 에러 메시지 표시
+                        // if(title == ''){
+                        //     Get.snackbar('제목', '제목을 입력하세요');
+                        //   }else if(nickName == ''){
+                        //      Get.snackbar('닉네임', '닉네임을 입력하세요');
+                        //   }else
+                        if (selectedImage.value != null) {
+                          Get.snackbar('이미지', '이미지를 선택하세요');
+                        } else {
+                          Get.snackbar('비밀번호', '비밀번호가 일치하지 않습니다');
+                        }
+                        // checkPassword !=
+                        //   post.password
+                        // showDialog(
+                        //   context: context,
+                        //   builder:
+                        //       (BuildContext context) {
+                        //     return AlertDialog(
+                        //       title: Text('오류'),
+                        //       content: Text(
+                        //           '비밀번호가 일치하지 않습니다.'),
+                        //       actions: [
+                        //         TextButton(
+                        //           onPressed: () {
+                        //             Navigator.of(
+                        //                     context)
+                        //                 .pop();
+                        //           },
+                        //           child: Text('닫기'),
+                        //         ),
+                        //       ],
+                        //     );
+                        //   },
+                        // );
+                      }
+                    }
+                  },
+                  child: Text('저장'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('닫기'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 }
