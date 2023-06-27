@@ -23,17 +23,10 @@ class LuckyBoxController extends GetxController {
   TextEditingController nicknameChangeC = TextEditingController();
   TextEditingController titleChangeC = TextEditingController();
   TextEditingController pwCheckC = TextEditingController();
-
-  // Rx<String> title = Rx(''); // 23~26째 줄을 post클래스로 대체할 수 있지 않을까?
-  // Rx<String> nickname = Rx(''); // 23~26째 줄을 post클래스로 대체할 수 있지 않을까?
-  // Rx<String> password = Rx(''); // 23~26째 줄을 post클래스로 대체할 수 있지 않을까?
-  // DateTime date = DateTime.now(); // 23~26째 줄을 post클래스로 대체할 수 있지 않을까?
-  // DateTime abc = DateTime.fromMillisecondsSinceEpoch(1234);
   Rx<List<DocumentSnapshot>> documents = Rx([]);
-  // Rx<File?> selectedImage = Rx(File());
-  final selectedImage = Rx<File?>(null);
-  Rx<bool> isEnd = Rx(false);
-  Rx<bool> isRequested = Rx(false);
+  final selectedImage1 = Rx<File?>(null);
+  final selectedImage2 = Rx<File?>(null);
+  final selectedImage3 = Rx<File?>(null);
 
   @override
   void onInit() {
@@ -65,6 +58,8 @@ class LuckyBoxController extends GetxController {
     }
   }
 
+
+   // 
   Future<void> onPressedUploadButton(BuildContext context) async {
     String titleText = titleC.text;
     String nicknameText = nicknameC.text;
@@ -72,20 +67,30 @@ class LuckyBoxController extends GetxController {
 
     // int koreaTime = DateTime.now().toUtc().add(const Duration(hours: 9)).millisecondsSinceEpoch; // KST(한국 표준시)로 변환
 
-    int date = DateTime.now().toUtc().add(const Duration(hours: 9)).millisecondsSinceEpoch; // KST(한국 표준시)로 변환
+    int date = DateTime.now()
+        .toUtc()
+        .add(const Duration(hours: 9))
+        .millisecondsSinceEpoch; // KST(한국 표준시)로 변환
 
-    String? urlText =
-        await uploadImage(selectedImage.value!, fileName: date.toString());
-    if (urlText == null) {
+   /// fileName을 모두 date.toString()로 하면 다른 이미지여도 이름이 같아져서
+   /// 모두 마지막 이미지로 바뀐다. 그래서 urlText2, 3에는 각각 +1,+2 해줌
+    String? urlText1 =
+        await uploadImage(selectedImage1.value!, fileName: date.toString());
+    String? urlText2 =
+        await uploadImage(selectedImage2.value, fileName: (date+1).toString());
+    String? urlText3 =
+        await uploadImage(selectedImage3.value, fileName: (date+2).toString());
+    if (urlText1 == null) {
       Get.snackbar('이미지', '이미지를 한 개 이상 등록해주세요');
       return;
     }
+    List<String?> listUrlTexts = [urlText1, urlText2, urlText3];
 
     Post post = Post(
       title: titleText,
       nickName: nicknameText,
       password: passwordText,
-      images: [urlText],
+      images: listUrlTexts,
       views: 0,
       date: date,
     );
@@ -271,12 +276,14 @@ class LuckyBoxController extends GetxController {
   //   }
   // }
 
-  Future<String?> uploadImage(File imageFile,
+
+// firebase storage에 이름을 fileName으로 하여 이미지(imageFile) 저장, imageUrl 뽑아냄
+  Future<String?> uploadImage(File? imageFile,
       {required String fileName}) async {
     try {
       Reference storageReference =
           FirebaseStorage.instance.ref().child('images/$fileName');
-      UploadTask uploadTask = storageReference.putFile(imageFile);
+      UploadTask uploadTask = storageReference.putFile(imageFile!);
       TaskSnapshot taskSnapshot = await uploadTask;
       String imageUrl = await taskSnapshot.ref.getDownloadURL();
       print(imageUrl);
@@ -334,13 +341,58 @@ class LuckyBoxController extends GetxController {
                         ),
                       ),
                     ),
-                    Obx(() => selectedImage.value == null
-                        ? Text('이미지를 선택하세요')
-                        : Image.file(selectedImage.value!)),
+                    Obx(() => selectedImage1.value ==
+                                            null
+                                        ? IconButton(
+                                            onPressed: () async {
+                                              File? file = await MediaPicker
+                                                  .singlePhoto();
+                                              if (file != null) {
+                                                selectedImage1
+                                                    .value = file;
+                                                setState(() {});
+                                              }
+                                            },
+                                            icon: Icon(
+                                                Icons.photo_album_outlined))
+                                        : Image.file(
+                                            selectedImage1.value!)),
+                                    Obx(() => selectedImage2.value ==
+                                            null
+                                        ? IconButton(
+                                            onPressed: () async {
+                                              File? file = await MediaPicker
+                                                  .singlePhoto();
+                                              if (file != null) {
+                                                selectedImage2
+                                                    .value = file;
+                                                setState(() {});
+                                              }
+                                            },
+                                            icon: Icon(
+                                                Icons.photo_album_outlined))
+                                        : Image.file(
+                                            selectedImage2.value!)),
+                                    Obx(() => selectedImage3.value ==
+                                            null
+                                        ? IconButton(
+                                            onPressed: () async {
+                                              File? file = await MediaPicker
+                                                  .singlePhoto();
+                                              if (file != null) {
+                                                selectedImage3
+                                                    .value = file;
+                                                setState(() {});
+                                              }
+                                            },
+                                            icon: Icon(
+                                                Icons.photo_album_outlined))
+                                        : Image.file(
+                                            selectedImage3.value!)),
                     TextField(
                       controller: pwCheckC,
                       decoration: InputDecoration(
-                        labelText: '비밀번호',
+                        labelText: '비밀번호 확인',
                       ),
                     ),
                     // 추가로 수정할 필드들을 TextField로 추가
@@ -353,7 +405,7 @@ class LuckyBoxController extends GetxController {
                   onPressed: () async {
                     File? file = await MediaPicker.singlePhoto();
                     if (file != null) {
-                      selectedImage.value = file;
+                      selectedImage1.value = file;
 
                       setState(() {});
                     }
@@ -371,7 +423,7 @@ class LuckyBoxController extends GetxController {
                       Get.snackbar('닉네임', '닉네임을 적어주세요');
                       return; // return을 써주면 if문 읽고 빠져나와서 그 다음은 안읽는다.
                     }
-                    if (selectedImage.value == null) {
+                    if (selectedImage1.value == null) {
                       Get.snackbar('이미지', '이미지를 한 개 이상 선택해 주세요');
                       return;
                     }
@@ -382,14 +434,26 @@ class LuckyBoxController extends GetxController {
                     }
                     int date = DateTime.now().millisecondsSinceEpoch;
 
-                    String? urlText = await uploadImage(selectedImage.value!,
+                    String? urlText1 = await uploadImage(selectedImage1.value!,
                         fileName: date.toString());
+                    String? urlText2 = await uploadImage(selectedImage2.value!,
+                        fileName: date.toString());
+                    String? urlText3 = await uploadImage(selectedImage3.value!,
+                        fileName: date.toString());
+                    if (urlText1 == null) {
+                      Get.snackbar('이미지', '이미지를 한 개 이상 등록해주세요');
+                      return;
+                    }
+                    List<String?> listUrlTexts = [urlText1, urlText2, urlText3];
 
                     final newData = {
                       'title': titleChangeC.text,
                       'nickName': nicknameChangeC.text,
-                      'images': [urlText],
-                      'date' : DateTime.now().toUtc().add(const Duration(hours: 9)).millisecondsSinceEpoch,
+                      'images': listUrlTexts,
+                      'date': DateTime.now()
+                          .toUtc()
+                          .add(const Duration(hours: 9))
+                          .millisecondsSinceEpoch,
                     };
                     updatePostData(post.date.toString(), newData).then((_) {
                       Navigator.of(context).pop();

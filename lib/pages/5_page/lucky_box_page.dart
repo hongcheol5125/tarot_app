@@ -129,41 +129,87 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                                         labelText: '비밀번호(4자리)',
                                       ),
                                     ),
-                                    Obx(() => controller.selectedImage.value ==
+                                    Obx(() => controller.selectedImage1.value ==
                                             null
-                                        ? Text('이미지를 선택하세요')
+                                        ? IconButton(
+                                            onPressed: () async {
+                                              File? file = await MediaPicker
+                                                  .singlePhoto();
+                                              if (file != null) {
+                                                controller.selectedImage1
+                                                    .value = file;
+                                                setState(() {});
+                                              }
+                                            },
+                                            icon: Icon(
+                                                Icons.photo_album_outlined))
                                         : Image.file(
-                                            controller.selectedImage.value!)),
+                                            controller.selectedImage1.value!)),
+                                    Obx(() => controller.selectedImage2.value ==
+                                            null
+                                        ? IconButton(
+                                            onPressed: () async {
+                                              File? file = await MediaPicker
+                                                  .singlePhoto();
+                                              if (file != null) {
+                                                controller.selectedImage2
+                                                    .value = file;
+                                                setState(() {});
+                                              }
+                                            },
+                                            icon: Icon(
+                                                Icons.photo_album_outlined))
+                                        : Image.file(
+                                            controller.selectedImage2.value!)),
+                                    Obx(() => controller.selectedImage3.value ==
+                                            null
+                                        ? IconButton(
+                                            onPressed: () async {
+                                              File? file = await MediaPicker
+                                                  .singlePhoto();
+                                              if (file != null) {
+                                                controller.selectedImage3
+                                                    .value = file;
+                                                setState(() {});
+                                              }
+                                            },
+                                            icon: Icon(
+                                                Icons.photo_album_outlined))
+                                        : Image.file(
+                                            controller.selectedImage3.value!)),
                                   ],
                                 ),
                               ),
                               actions: [
-                                TextButton(
-                                  child: Text('이미지 선택'),
-                                  onPressed: () async {
-                                    File? file =
-                                        await MediaPicker.singlePhoto();
-                                    if (file != null) {
-                                      controller.selectedImage.value = file;
+                                // TextButton(
+                                //   child: Text('이미지 선택'),
+                                //   onPressed: () async {
+                                //     File? file =
+                                //         await MediaPicker.singlePhoto();
+                                //     if (file != null) {
+                                //       controller.selectedImage1.value = file;
 
-                                      setState(() {});
-                                    }
-                                  },
-                                ),
+                                //       setState(() {});
+                                //     }
+                                //   },
+                                // ),
                                 TextButton(
                                   onPressed: () async {
-                                    String nicknameText = controller.nicknameC.text;
+                                    String nicknameText =
+                                        controller.nicknameC.text;
                                     if (nicknameText.isEmpty) {
                                       Get.snackbar('닉네임', '닉네임을 적어주세요');
-                                      return;    // return을 써주면 if문 읽고 빠져나와서 그 다음은 안읽는다.
+                                      return; // return을 써주면 if문 읽고 빠져나와서 그 다음은 안읽는다.
                                     }
                                     String titleText = controller.titleC.text;
                                     if (titleText.isEmpty) {
                                       Get.snackbar('제목', '제목을 적어주세요');
-                                      return; 
+                                      return;
                                     }
-                                    if (controller.selectedImage.value == null) {
-                                      Get.snackbar('이미지', '이미지를 한 개 이상 선택해 주세요.');
+                                    if (controller.selectedImage1.value ==
+                                        null) {
+                                      Get.snackbar(
+                                          '이미지', '이미지를 한 개 이상 선택해 주세요.');
                                       return;
                                     }
                                     String passwordText = controller.pwC.text;
@@ -230,9 +276,10 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                     DateTime _date = DateTime.fromMillisecondsSinceEpoch(date);
                     String showDate =
                         '${_date.year}년${_date.month}월${_date.day}일 ${_date.hour}:${_date.minute}';
-
-                    String imgUrl = post.images[
-                        0]; // TODO: images에 여러개의 사진이 들어가면 수정 필요함. 현재는 1개의 이미지만 첨부된다는 전제 하에 진행했음
+// TODO: images에 여러개의 사진이 들어가면 수정 필요함. 현재는 1개의 이미지만 첨부된다는 전제 하에 진행했음
+                    String imgUrl1 = post.images[0];
+                    String? imgUrl2 = post.images[1];
+                    String? imgUrl3 = post.images[2];
                     return TextButton(
                       onPressed: () {
                         controller.incrementViewCount(post.date.toString());
@@ -257,16 +304,66 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
-                                                  title: Image.network(imgUrl),
+                                                  title: Image.network(imgUrl1),
                                                 );
                                               });
                                         },
-                                        icon: Container(
-                                          width: 200,
-                                          height: 100,
-                                          child: Image.network(imgUrl),
+                                        icon: Expanded(
+                                          child: SizedBox(
+                                            width: 50,
+                                            height: 25,
+                                            child: Image.network(imgUrl1),
+                                          ),
                                         ),
-                                      )
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: imgUrl2 != null
+                                                      ? Image.network(imgUrl2)
+                                                      : Icon(Icons
+                                                          .photo_album_outlined),
+                                                );
+                                              });
+                                        },
+                                        icon: Expanded(
+                                          child: SizedBox(
+                                            width: 50,
+                                            height: 25,
+                                            child: imgUrl2 != null
+                                                ? Image.network(imgUrl2)
+                                                : Icon(
+                                                    Icons.photo_album_outlined),
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: imgUrl3 != null
+                                                      ? Image.network(imgUrl3)
+                                                      : Icon(Icons
+                                                          .photo_album_outlined),
+                                                );
+                                              });
+                                        },
+                                        icon: Expanded(
+                                          child: SizedBox(
+                                            width: 50,
+                                            height: 25,
+                                            child: imgUrl3 != null
+                                                ? Image.network(imgUrl3)
+                                                : Icon(
+                                                    Icons.photo_album_outlined),
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   )
                                 ],
@@ -292,9 +389,23 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                             SizedBox(
                               height: 30,
                               width: 30,
-                              child: Image.network(imgUrl),
+                              child: Image.network(imgUrl1),
                             ),
-                            SizedBox(width: 150),
+                            imgUrl2 != null
+                                ? SizedBox(
+                                    height: 30,
+                                    width: 30,
+                                    child: Image.network(imgUrl2),
+                                  )
+                                : Icon(Icons.photo_album_outlined),
+                            imgUrl3 != null
+                                ? SizedBox(
+                                    height: 30,
+                                    width: 30,
+                                    child: Image.network(imgUrl3),
+                                  )
+                                : Icon(Icons.photo_album_outlined),
+                            Spacer(),
 
                             // 수정 버튼
                             TextButton(
@@ -355,8 +466,10 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                     String showDate =
                         '${_date.year}년${_date.month}월${_date.day}일 ${_date.hour}:${_date.minute}';
 
-                    String imgUrl = post.images[
-                        0]; // TODO: images에 여러개의 사진이 들어가면 수정 필요함. 현재는 1개의 이미지만 첨부된다는 전제 하에 진행했음
+// TODO: images에 여러개의 사진이 들어가면 수정 필요함. 현재는 1개의 이미지만 첨부된다는 전제 하에 진행했음
+                    String imgUrl1 = post.images[0];
+                    String? imgUrl2 = post.images[1];
+                    String? imgUrl3 = post.images[2];
                     controller.listenScroll(); // 기존 데이터 불러오기 메소드
                     return TextButton(
                       onPressed: () {
@@ -381,20 +494,69 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                                       IconButton(
                                         onPressed: () {
                                           showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                title: Image.network(imgUrl),
-                                              );
-                                            },
-                                          );
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: Image.network(imgUrl1),
+                                                );
+                                              });
                                         },
-                                        icon: Container(
-                                          width: 200,
-                                          height: 100,
-                                          child: Image.network(imgUrl),
+                                        icon: Expanded(
+                                          child: SizedBox(
+                                            width: 50,
+                                            height: 25,
+                                            child: Image.network(imgUrl1),
+                                          ),
                                         ),
-                                      )
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: imgUrl2 != null
+                                                      ? Image.network(imgUrl2)
+                                                      : Icon(Icons
+                                                          .photo_album_outlined),
+                                                );
+                                              });
+                                        },
+                                        icon: Expanded(
+                                          child: SizedBox(
+                                            width: 50,
+                                            height: 25,
+                                            child: imgUrl2 != null
+                                                ? Image.network(imgUrl2)
+                                                : Icon(
+                                                    Icons.photo_album_outlined),
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: imgUrl3 != null
+                                                      ? Image.network(imgUrl3)
+                                                      : Icon(Icons
+                                                          .photo_album_outlined),
+                                                );
+                                              });
+                                        },
+                                        icon: Expanded(
+                                          child: SizedBox(
+                                            width: 50,
+                                            height: 25,
+                                            child: imgUrl3 != null
+                                                ? Image.network(imgUrl3)
+                                                : Icon(
+                                                    Icons.photo_album_outlined),
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   )
                                 ],
@@ -417,17 +579,30 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                           children: [
                             Text(titleText),
                             Text(post.title),
-                            SizedBox(
+                            Container(
                               height: 30,
                               width: 30,
-                              child: Image.network(imgUrl),
+                              child: Image.network(imgUrl1),
                             ),
-                            SizedBox(width: 150),
+                            imgUrl2 != null
+                                ? Container(
+                                    height: 30,
+                                    width: 30,
+                                    child: Image.network(imgUrl2),
+                                  )
+                                : Icon(Icons.photo_album_outlined),
+                            imgUrl3 != null
+                                ? Container(
+                                    height: 30,
+                                    width: 30,
+                                    child: Image.network(imgUrl3),
+                                  )
+                                : Icon(Icons.photo_album_outlined),
+                            Spacer(),
 
                             // 수정 버튼
                             TextButton(
                               onPressed: () async {
-                                
                                 await controller.onPressedChangeButton(
                                     context, post);
                               },
