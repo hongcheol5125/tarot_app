@@ -47,6 +47,7 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                                 onPressed: () {
                                   // Uint8List 타입을 저장
                                   controller.saveImageToGallery(captureButton);
+                                  Navigator.of(context).pop();
                                 },
                                 child: Text('내 앨범에 저장!'),
                               ),

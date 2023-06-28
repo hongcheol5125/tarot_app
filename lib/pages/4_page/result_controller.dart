@@ -23,32 +23,11 @@ class ResultController extends GetxController {
   String fileName = '';
   late List<Uint8List> captureList;
   List<Uint8List> noCaptureData = [];
-  Rx<BannerAd?> bannerAd = Rx<BannerAd?>(null);
+   Rx<BannerAd?> bannerAd = Rx<BannerAd?>(null);
 
   @override
   void onInit() async{
-    
-    await BannerAd(
-    adUnitId: AdHelper.bannerAdUnitId,
-    request: AdRequest(),
-    size: AdSize.banner,
-    listener: BannerAdListener(
-      onAdLoaded: (ad) {
-        print('###################ok###################');
-        bannerAd.value = ad as BannerAd?;
-        update();
-      },
-      onAdFailedToLoad: (ad, err) {
-        print('Failed to load a banner ad: ${err.message}');
-        ad.dispose();
-      },
-      onAdOpened: (Ad ad) => print('Ad opened.'),
-    // Called when an ad removes an overlay that covers the screen.
-    onAdClosed: (Ad ad) => print('Ad closed.'),
-    // Called when an impression occurs on the ad.
-    onAdImpression: (Ad ad) => print('Ad impression.'),
-    ),
-  ).load();
+    super.onInit();
     result = Get.arguments;
 
     // 생년월일에 따른 랜덤숫자(20~30중 하나)
@@ -133,7 +112,27 @@ class ResultController extends GetxController {
     print('luckyPoint : ${luckyPoint}');
 
     captureWidget();
-    super.onInit();
+    await BannerAd(
+    adUnitId: AdHelper.bannerAdUnitId,
+    request: AdRequest(),
+    size: AdSize.banner,
+    listener: BannerAdListener(
+      onAdLoaded: (ad) {
+        print('###################ok###################');
+        bannerAd.value = ad as BannerAd?;
+        update();
+      },
+      onAdFailedToLoad: (ad, err) {
+        print('Failed to load a banner ad: ${err.message}');
+        ad.dispose();
+      },
+      onAdOpened: (Ad ad) => print('Ad opened.'),
+    // Called when an ad removes an overlay that covers the screen.
+    onAdClosed: (Ad ad) => print('Ad closed.'),
+    // Called when an impression occurs on the ad.
+    onAdImpression: (Ad ad) => print('Ad impression.'),
+    ),
+  ).load();
   }
 
   showText() {
@@ -143,7 +142,7 @@ class ResultController extends GetxController {
   captureWidget() async {
     // 위젯 캡처를 위해 잠시 지연
     try {
-      await Future.delayed(Duration(seconds: 10));
+      await Future.delayed(Duration(seconds: 12));
 
       // 위젯을 캡처하여 이미지로 저장
       final imageFile = await screenshotController.capture();
