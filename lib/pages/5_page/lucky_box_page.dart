@@ -245,7 +245,7 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
               ],
             ),
           ),
-          
+
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
@@ -398,14 +398,20 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                                     width: 30,
                                     child: Image.network(imgUrl2),
                                   )
-                                : Icon(Icons.photo_album_outlined),
+                                : SizedBox(
+                                    height: 30,
+                                    width: 30,
+                                  ),
                             imgUrl3 != null
                                 ? SizedBox(
                                     height: 30,
                                     width: 30,
                                     child: Image.network(imgUrl3),
                                   )
-                                : Icon(Icons.photo_album_outlined),
+                                : SizedBox(
+                                    height: 30,
+                                    width: 30,
+                                  ),
                             Spacer(),
 
                             // 수정 버튼
@@ -591,14 +597,20 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                                     width: 30,
                                     child: Image.network(imgUrl2),
                                   )
-                                : Icon(Icons.photo_album_outlined),
+                                : SizedBox(
+                                    height: 30,
+                                    width: 30,
+                                  ),
                             imgUrl3 != null
                                 ? SizedBox(
                                     height: 30,
                                     width: 30,
                                     child: Image.network(imgUrl3),
                                   )
-                                : Icon(Icons.photo_album_outlined),
+                                : SizedBox(
+                                    height: 30,
+                                    width: 30,
+                                  ),
                             Spacer(),
 
                             // 수정 버튼
@@ -699,18 +711,18 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                 ),
               ),
               Obx(() {
-            if (controller.bannerAd.value != null) {
-              return Align(
-                child: Container(
-                  width: controller.bannerAd.value!.size.width.toDouble(),
-                  height: controller.bannerAd.value!.size.height.toDouble(),
-                  child: AdWidget(ad: controller.bannerAd.value!),
-                ),
-              );
-            } else {
-              return SizedBox(height: 10, width: 10);
-            }
-          })
+                if (controller.bannerAd.value != null) {
+                  return Align(
+                    child: Container(
+                      width: controller.bannerAd.value!.size.width.toDouble(),
+                      height: controller.bannerAd.value!.size.height.toDouble(),
+                      child: AdWidget(ad: controller.bannerAd.value!),
+                    ),
+                  );
+                } else {
+                  return SizedBox(height: 10, width: 10);
+                }
+              })
             ],
           ),
         ),
