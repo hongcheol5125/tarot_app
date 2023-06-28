@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:tarot_app/model/result.dart';
 
 import '../../routes/app_routes.dart';
@@ -239,7 +240,6 @@ class CheckPage extends GetWidget<CheckController> {
           },
           child: Text('restart!!'),
         ),
-        SizedBox(height: 50)
       ],
     );
   }
@@ -326,6 +326,7 @@ class CheckPage extends GetWidget<CheckController> {
           },
           child: Text('NEXT!!'),
         ),
+        
       ],
     );
   }
@@ -431,6 +432,20 @@ class CheckPage extends GetWidget<CheckController> {
                 ],
               ),
             ),
+            SizedBox(height: 15,),
+          Obx(() {
+            if (controller.bannerAd.value != null) {
+              return Align(
+                child: Container(
+                  width: controller.bannerAd.value!.size.width.toDouble(),
+                  height: controller.bannerAd.value!.size.height.toDouble(),
+                  child: AdWidget(ad: controller.bannerAd.value!),
+                ),
+              );
+            } else {
+              return SizedBox(height: 10, width: 10);
+            }
+          })
           ],
         ),
       ),

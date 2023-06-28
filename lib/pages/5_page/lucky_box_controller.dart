@@ -7,7 +7,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:tarot_app/ad_helper.dart';
 import 'package:tarot_app/model/post.dart';
 import 'package:tarot_app/utils/image_selector.dart';
 
@@ -27,9 +29,10 @@ class LuckyBoxController extends GetxController {
   final selectedImage1 = Rx<File?>(null);
   final selectedImage2 = Rx<File?>(null);
   final selectedImage3 = Rx<File?>(null);
+  Rx<BannerAd?> bannerAd = Rx<BannerAd?>(null);
 
   @override
-  void onInit() {
+  void onInit() async{
     super.onInit();
     pageIndex.value = Get.arguments['initialTab'];
     // capture = Get.arguments['capture'];
@@ -47,6 +50,27 @@ class LuckyBoxController extends GetxController {
     luckyController = PageController(initialPage: pageIndex.value);
     initTopFiveView();
     initialData();
+    await BannerAd(
+    adUnitId: AdHelper.bannerAdUnitId,
+    request: AdRequest(),
+    size: AdSize.banner,
+    listener: BannerAdListener(
+      onAdLoaded: (ad) {
+        print('###################ok###################');
+        bannerAd.value = ad as BannerAd?;
+        update();
+      },
+      onAdFailedToLoad: (ad, err) {
+        print('Failed to load a banner ad: ${err.message}');
+        ad.dispose();
+      },
+      onAdOpened: (Ad ad) => print('Ad opened.'),
+    // Called when an ad removes an overlay that covers the screen.
+    onAdClosed: (Ad ad) => print('Ad closed.'),
+    // Called when an impression occurs on the ad.
+    onAdImpression: (Ad ad) => print('Ad impression.'),
+    ),
+  ).load();
   }
 
   Future<void> saveImageToGallery(Uint8List imageBytes) async {

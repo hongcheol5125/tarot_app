@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:tarot_app/model/post.dart';
 import 'package:tarot_app/utils/image_selector.dart';
 
@@ -83,14 +84,14 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
           },
           child: Text('restart!!'),
         ),
-        SizedBox(height: 70)
+        SizedBox(height: 20)
       ],
     );
   }
 
   luckyCertification(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.fromLTRB(15, 5, 15, 15),
       child: Column(
         children: [
           Padding(
@@ -244,7 +245,7 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
               ],
             ),
           ),
-          SizedBox(height: 10),
+          
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
@@ -579,20 +580,20 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                           children: [
                             Text(titleText),
                             Text(post.title),
-                            Container(
+                            SizedBox(
                               height: 30,
                               width: 30,
                               child: Image.network(imgUrl1),
                             ),
                             imgUrl2 != null
-                                ? Container(
+                                ? SizedBox(
                                     height: 30,
                                     width: 30,
                                     child: Image.network(imgUrl2),
                                   )
                                 : Icon(Icons.photo_album_outlined),
                             imgUrl3 != null
-                                ? Container(
+                                ? SizedBox(
                                     height: 30,
                                     width: 30,
                                     child: Image.network(imgUrl3),
@@ -687,6 +688,7 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                   ),
                 ],
               ),
+              SizedBox(height: 15),
               Expanded(
                 child: PageView(
                   controller: controller.luckyController,
@@ -696,6 +698,19 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                   ],
                 ),
               ),
+              Obx(() {
+            if (controller.bannerAd.value != null) {
+              return Align(
+                child: Container(
+                  width: controller.bannerAd.value!.size.width.toDouble(),
+                  height: controller.bannerAd.value!.size.height.toDouble(),
+                  child: AdWidget(ad: controller.bannerAd.value!),
+                ),
+              );
+            } else {
+              return SizedBox(height: 10, width: 10);
+            }
+          })
             ],
           ),
         ),
