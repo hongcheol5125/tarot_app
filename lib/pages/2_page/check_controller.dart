@@ -35,6 +35,7 @@ class CheckController extends GetxController {
     pageIndex = Rx(initialTab);
     checkController = PageController(initialPage: initialTab);
 
+// 애드몹
     await BannerAd(
     adUnitId: AdHelper.bannerAdUnitId,
     request: AdRequest(),

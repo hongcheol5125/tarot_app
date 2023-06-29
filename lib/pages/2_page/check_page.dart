@@ -283,6 +283,11 @@ class CheckPage extends GetWidget<CheckController> {
                   ),
                 );
                 return;
+              } else{
+                controller.checkController.animateToPage(1,
+                    duration: Duration(milliseconds: 400),
+                    curve: Curves.easeInOut);
+                controller.pageIndex.value = 1;
               }
             } else {
               if (controller.checkController.hasClients) {
@@ -387,6 +392,11 @@ class CheckPage extends GetWidget<CheckController> {
             );
 
             Get.toNamed(Routes.RESULT_PAGE, arguments: result);
+            // VV잘 넘어가는지 확인
+            // print('------------------------------------');
+            // print(result.birthDay);
+            // print(result.birthTime);
+            // print(result.name);
           },
           child: Text('NEXT!!'),
         ),

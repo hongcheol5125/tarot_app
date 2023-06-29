@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:tarot_app/atest.dart';
 import 'package:tarot_app/pages/0_splash_page/splash_page.dart';
 import 'package:tarot_app/routes/app_routes.dart';
 
@@ -38,9 +37,5 @@ abstract class AppPages {
       name: Routes.SPLASH_PAGE,
       page: () => const SplashPage(duration: 3)
     ),
-    GetPage(
-      name: Routes.MY_PAGE_VIEW,
-      page: () => const MyPageView()
-    )
   ];
 }

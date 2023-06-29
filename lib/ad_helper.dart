@@ -1,5 +1,6 @@
 import 'dart:io';
 
+// 광고 android일 때, ios일 때
 class AdHelper{
   static String get bannerAdUnitId {
     if (Platform.isAndroid) {
