@@ -13,6 +13,48 @@ import 'lucky_box_controller.dart';
 class LuckyBoxPage extends GetWidget<LuckyBoxController> {
   const LuckyBoxPage({super.key});
 
+  boxButton(){
+    return Obx(
+                    () => ElevatedButton(
+                      onPressed: () {
+                        if (controller.luckyController.hasClients) {
+                          controller.luckyController.animateToPage(0,
+                              duration: Duration(milliseconds: 400),
+                              curve: Curves.easeInOut);
+                          controller.pageIndex.value = 0;
+                        }
+                      },
+                      child: Text('럭키상자'),
+                      style: ElevatedButton.styleFrom(
+                          minimumSize: Size(100, 50),
+                          backgroundColor: controller.pageIndex.value == 0
+                              ? Colors.blue
+                              : Colors.grey),
+                    ),
+                  );
+  }
+
+  certificationButton(){
+    return Obx(
+                    () => ElevatedButton(
+                      onPressed: () {
+                        if (controller.luckyController.hasClients) {
+                          controller.luckyController.animateToPage(1,
+                              duration: Duration(milliseconds: 400),
+                              curve: Curves.easeInOut);
+                          controller.pageIndex.value = 1;
+                        }
+                      },
+                      child: Text('럭키인증'),
+                      style: ElevatedButton.styleFrom(
+                          minimumSize: Size(100, 50),
+                          backgroundColor: controller.pageIndex.value == 1
+                              ? Colors.blue
+                              : Colors.grey),
+                    ),
+                  );
+  }
+
   luckyBox() {
     return Column(
       children: [
@@ -652,6 +694,22 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
     );
   }
 
+  adMob(){
+    return Obx(() {
+                if (controller.bannerAd.value != null) {
+                  return Align(
+                    child: Container(
+                      width: controller.bannerAd.value!.size.width.toDouble(),
+                      height: controller.bannerAd.value!.size.height.toDouble(),
+                      child: AdWidget(ad: controller.bannerAd.value!),
+                    ),
+                  );
+                } else {
+                  return SizedBox(height: 10, width: 10);
+                }
+              });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -663,42 +721,8 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Obx(
-                    () => ElevatedButton(
-                      onPressed: () {
-                        if (controller.luckyController.hasClients) {
-                          controller.luckyController.animateToPage(0,
-                              duration: Duration(milliseconds: 400),
-                              curve: Curves.easeInOut);
-                          controller.pageIndex.value = 0;
-                        }
-                      },
-                      child: Text('럭키상자'),
-                      style: ElevatedButton.styleFrom(
-                          minimumSize: Size(100, 50),
-                          backgroundColor: controller.pageIndex.value == 0
-                              ? Colors.blue
-                              : Colors.grey),
-                    ),
-                  ),
-                  Obx(
-                    () => ElevatedButton(
-                      onPressed: () {
-                        if (controller.luckyController.hasClients) {
-                          controller.luckyController.animateToPage(1,
-                              duration: Duration(milliseconds: 400),
-                              curve: Curves.easeInOut);
-                          controller.pageIndex.value = 1;
-                        }
-                      },
-                      child: Text('럭키인증'),
-                      style: ElevatedButton.styleFrom(
-                          minimumSize: Size(100, 50),
-                          backgroundColor: controller.pageIndex.value == 1
-                              ? Colors.blue
-                              : Colors.grey),
-                    ),
-                  ),
+                  boxButton(),
+                  certificationButton(),
                 ],
               ),
               SizedBox(height: 15),
@@ -711,19 +735,7 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                   ],
                 ),
               ),
-              Obx(() {
-                if (controller.bannerAd.value != null) {
-                  return Align(
-                    child: Container(
-                      width: controller.bannerAd.value!.size.width.toDouble(),
-                      height: controller.bannerAd.value!.size.height.toDouble(),
-                      child: AdWidget(ad: controller.bannerAd.value!),
-                    ),
-                  );
-                } else {
-                  return SizedBox(height: 10, width: 10);
-                }
-              })
+              adMob()
             ],
           ),
         ),

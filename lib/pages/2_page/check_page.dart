@@ -10,6 +10,69 @@ import 'check_controller.dart';
 class CheckPage extends GetWidget<CheckController> {
   const CheckPage({super.key});
 
+  arrowBackButton() {
+    return Obx(
+      () => IconButton(
+          onPressed: controller.arrowButton,
+          icon: Icon(Icons.arrow_back),
+          color: controller.pageIndex.value == 0
+              ? Colors.purple
+              : Colors.purpleAccent),
+    );
+  }
+
+  pageViewTitles() {
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Expanded(
+            child: Obx(
+              () => Container(
+                height: 50,
+                decoration: controller.pageIndex.value == 0
+                    ? const BoxDecoration(
+                        color: Colors.white,
+                      )
+                    : const BoxDecoration(color: Colors.grey),
+                alignment: Alignment.center,
+                child: Text(
+                  '1-1 인적사항',
+                  style: TextStyle(
+                    color: controller.pageIndex.value == 0
+                        ? null
+                        : Colors.grey[300],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Obx(
+              () => Container(
+                height: 50,
+                decoration: controller.pageIndex.value == 1
+                    ? const BoxDecoration(
+                        color: Colors.white,
+                      )
+                    : const BoxDecoration(color: Colors.grey),
+                alignment: Alignment.center,
+                child: Text(
+                  '1-2 타로카드',
+                  style: TextStyle(
+                    color: controller.pageIndex.value == 1
+                        ? null
+                        : Colors.grey[300],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   checkList(BuildContext context) {
     return Column(
       children: [
@@ -260,7 +323,8 @@ class CheckPage extends GetWidget<CheckController> {
         controller.timeBuilder(),
         SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () { // context때문에 controller로 못 넘기는듯 
+          onPressed: () {
+            // context때문에 controller로 못 넘기는듯
             if (controller.imagePath1.value == 'attachedfiles/tarotcard/대기카드.png' ||
                 controller.imagePath2.value ==
                     'attachedfiles/tarotcard/대기카드.png' ||
@@ -326,20 +390,24 @@ class CheckPage extends GetWidget<CheckController> {
           },
           child: Text('NEXT!!'),
         ),
-        
       ],
     );
   }
 
-  arrowBackButton() {
-    return Obx(
-      () => IconButton(
-          onPressed: controller.arrowButton,
-          icon: Icon(Icons.arrow_back),
-          color: controller.pageIndex.value == 0
-              ? Colors.purple
-              : Colors.purpleAccent),
-    );
+  adMob() {
+    return Obx(() {
+      if (controller.bannerAd.value != null) {
+        return Align(
+          child: Container(
+            width: controller.bannerAd.value!.size.width.toDouble(),
+            height: controller.bannerAd.value!.size.height.toDouble(),
+            child: AdWidget(ad: controller.bannerAd.value!),
+          ),
+        );
+      } else {
+        return SizedBox(height: 10, width: 10);
+      }
+    });
   }
 
   @override
@@ -353,75 +421,8 @@ class CheckPage extends GetWidget<CheckController> {
         ),
         body: Column(
           children: [
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: Obx(
-                      () => GestureDetector(
-                        onTap: () {
-                          if (controller.checkController.hasClients) {
-                            controller.checkController.animateToPage(0,
-                                duration: Duration(milliseconds: 400),
-                                curve: Curves.easeInOut);
-                            controller.pageIndex.value = 0;
-                          }
-                        },
-                        child: Container(
-                          height: 50,
-                          decoration: controller.pageIndex.value == 0
-                              ? const BoxDecoration(
-                                  color: Colors.white,
-                                )
-                              : const BoxDecoration(color: Colors.grey),
-                          alignment: Alignment.center,
-                          child: Text(
-                            '1-1 인적사항',
-                            style: TextStyle(
-                              color: controller.pageIndex.value == 0
-                                  ? null
-                                  : Colors.grey[300],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Obx(
-                      () => GestureDetector(
-                        onTap: () {
-                          if (controller.checkController.hasClients) {
-                            controller.checkController.animateToPage(1,
-                                duration: Duration(milliseconds: 400),
-                                curve: Curves.easeInOut);
-                            controller.pageIndex.value = 1;
-                          }
-                        },
-                        child: Container(
-                          height: 50,
-                          decoration: controller.pageIndex.value == 1
-                              ? const BoxDecoration(
-                                  color: Colors.white,
-                                )
-                              : const BoxDecoration(color: Colors.grey),
-                          alignment: Alignment.center,
-                          child: Text(
-                            '1-2 타로카드',
-                            style: TextStyle(
-                              color: controller.pageIndex.value == 1
-                                  ? null
-                                  : Colors.grey[300],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            pageViewTitles(),
+            // pageView 목록
             Expanded(
               child: PageView(
                 physics: const NeverScrollableScrollPhysics(),
@@ -432,20 +433,9 @@ class CheckPage extends GetWidget<CheckController> {
                 ],
               ),
             ),
-            SizedBox(height: 15,),
-          Obx(() {
-            if (controller.bannerAd.value != null) {
-              return Align(
-                child: Container(
-                  width: controller.bannerAd.value!.size.width.toDouble(),
-                  height: controller.bannerAd.value!.size.height.toDouble(),
-                  child: AdWidget(ad: controller.bannerAd.value!),
-                ),
-              );
-            } else {
-              return SizedBox(height: 10, width: 10);
-            }
-          })
+            SizedBox(height: 15),
+            adMob(),
+            SizedBox(height: 20),
           ],
         ),
       ),

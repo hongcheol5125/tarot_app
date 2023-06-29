@@ -23,13 +23,14 @@ class ResultController extends GetxController {
   String fileName = '';
   late List<Uint8List> captureList;
   List<Uint8List> noCaptureData = [];
-   Rx<BannerAd?> bannerAd = Rx<BannerAd?>(null);
+  Rx<BannerAd?> bannerAd = Rx<BannerAd?>(null);
+  Rx<bool> isButtonDisabled = Rx(false);
 
   @override
-  void onInit() async{
+  void onInit() async {
     super.onInit();
     result = Get.arguments;
-
+    disableButton();
     // 생년월일에 따른 랜덤숫자(20~30중 하나)
     result.birthPoint = random.nextInt(11) + 20;
     print('birthPoint : ${result.birthPoint}');
@@ -113,26 +114,26 @@ class ResultController extends GetxController {
 
     captureWidget();
     await BannerAd(
-    adUnitId: AdHelper.bannerAdUnitId,
-    request: AdRequest(),
-    size: AdSize.banner,
-    listener: BannerAdListener(
-      onAdLoaded: (ad) {
-        print('###################ok###################');
-        bannerAd.value = ad as BannerAd?;
-        update();
-      },
-      onAdFailedToLoad: (ad, err) {
-        print('Failed to load a banner ad: ${err.message}');
-        ad.dispose();
-      },
-      onAdOpened: (Ad ad) => print('Ad opened.'),
-    // Called when an ad removes an overlay that covers the screen.
-    onAdClosed: (Ad ad) => print('Ad closed.'),
-    // Called when an impression occurs on the ad.
-    onAdImpression: (Ad ad) => print('Ad impression.'),
-    ),
-  ).load();
+      adUnitId: AdHelper.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          print('###################ok###################');
+          bannerAd.value = ad as BannerAd?;
+          update();
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          ad.dispose();
+        },
+        onAdOpened: (Ad ad) => print('Ad opened.'),
+        // Called when an ad removes an overlay that covers the screen.
+        onAdClosed: (Ad ad) => print('Ad closed.'),
+        // Called when an impression occurs on the ad.
+        onAdImpression: (Ad ad) => print('Ad impression.'),
+      ),
+    ).load();
   }
 
   showText() {
@@ -142,7 +143,7 @@ class ResultController extends GetxController {
   captureWidget() async {
     // 위젯 캡처를 위해 잠시 지연
     try {
-      await Future.delayed(Duration(seconds: 12));
+      await Future.delayed(Duration(seconds: 14));
 
       // 위젯을 캡처하여 이미지로 저장
       final imageFile = await screenshotController.capture();
@@ -167,5 +168,11 @@ class ResultController extends GetxController {
     } catch (e) {
       print('위젯 캡처 중 오류가 발생했습니다: $e');
     }
+  }
+
+  void disableButton() async {
+    isButtonDisabled.value = true;
+    await Future.delayed(Duration(seconds: 14));
+    isButtonDisabled.value = false;
   }
 }

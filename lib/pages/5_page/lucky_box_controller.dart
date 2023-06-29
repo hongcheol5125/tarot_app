@@ -50,6 +50,7 @@ class LuckyBoxController extends GetxController {
     luckyController = PageController(initialPage: pageIndex.value);
     initTopFiveView();
     initialData();
+    // 애드몹
     await BannerAd(
     adUnitId: AdHelper.bannerAdUnitId,
     request: AdRequest(),
@@ -73,6 +74,7 @@ class LuckyBoxController extends GetxController {
   ).load();
   }
 
+  // 이미지 캡쳐 메소드
   Future<void> saveImageToGallery(Uint8List imageBytes) async {
     final result = await ImageGallerySaver.saveImage(imageBytes);
     if (result['isSuccess']) {
@@ -83,7 +85,7 @@ class LuckyBoxController extends GetxController {
   }
 
 
-   // 
+   // firestore에 제목, 닉네임, 시간, 이미지 등 저장
   Future<void> onPressedUploadButton(BuildContext context) async {
     String titleText = titleC.text;
     String nicknameText = nicknameC.text;
@@ -97,7 +99,7 @@ class LuckyBoxController extends GetxController {
         .millisecondsSinceEpoch; // KST(한국 표준시)로 변환
 
    /// fileName을 모두 date.toString()로 하면 다른 이미지여도 이름이 같아져서
-   /// 모두 마지막 이미지로 바뀐다. 그래서 urlText2, 3에는 각각 +1,+2 해줌
+   /// 모두 마지막 이미지로 바뀐다. 그래서 urlText2, 3에는 각각 date +1,+2 해줌
     String? urlText1 =
         await uploadImage(selectedImage1.value!, fileName: date.toString());
     String? urlText2 =
@@ -159,7 +161,7 @@ class LuckyBoxController extends GetxController {
   int perPage = 5;
   int page = 0;
 
-  // 처음 페이지 나왔을 때 posts 콜렉션에서 데이터를 내림차순으로 2개씩 게시판 목록에 띄움
+  // 처음 페이지 나왔을 때 posts 콜렉션에서 데이터를 내림차순으로 5개(perPage만큼)씩 게시판 목록에 띄움
   void initialData() async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -259,6 +261,7 @@ class LuckyBoxController extends GetxController {
 
   Rx<List<DocumentSnapshot>> documentsForTopFiveView = Rx([]);
 
+  // 조회수(views) Top5를 firestore에 저장 
   initTopFiveView() async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -318,6 +321,7 @@ class LuckyBoxController extends GetxController {
     }
   }
 
+  // view수 올리는 메소드
   void incrementViewCount(String documentId) {
     FirebaseFirestore.instance
         .collection('posts')
@@ -337,6 +341,7 @@ class LuckyBoxController extends GetxController {
         .update(newData);
   }
 
+  
   Future<void> onPressedChangeButton(context, Post post) async {
     showDialog(
       context: context,
