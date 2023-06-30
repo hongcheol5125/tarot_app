@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -6,15 +5,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:tarot_app/model/post.dart';
+import 'package:tarot_app/services/local_data_service.dart';
 import 'package:tarot_app/utils/image_selector.dart';
 
 class LuckyBoxController extends GetxController {
+  final LocalDataService localDataService;
+  LuckyBoxController({required this.localDataService});
   late PageController luckyController;
   late Rx<int> pageIndex = Rx(0);
-  final box = GetStorage();
   late List<Uint8List> captureData;
   //----------------<위 : 럭키상자 / 아래 : 럭키인증>-----------------
   TextEditingController nicknameC = TextEditingController();
@@ -33,21 +33,13 @@ class LuckyBoxController extends GetxController {
     super.onInit();
     pageIndex.value = Get.arguments['initialTab'];
     // capture = Get.arguments['capture'];
-    if (box.read('captureList') == null) {
-      captureData = [];
-    } else {
-      List<dynamic> encodedList = box.read('captureList');
-      List<Uint8List> dataList =
-          encodedList.map((encodedData) => base64Decode(encodedData)).toList();
-
-      captureData = dataList;
-    }
+    captureData = localDataService.getImage();
 
     print(captureData);
     luckyController = PageController(initialPage: pageIndex.value);
     initTopFiveView();
     initialData();
-     }
+  }
 
   // 이미지 캡쳐 메소드
   Future<void> saveImageToGallery(Uint8List imageBytes) async {

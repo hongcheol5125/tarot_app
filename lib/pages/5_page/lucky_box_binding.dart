@@ -5,6 +5,6 @@ import 'lucky_box_controller.dart';
 class LuckyBoxBinding implements Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() =>LuckyBoxController());
+    Get.lazyPut(() => LuckyBoxController(localDataService: Get.find()));
   }
 }

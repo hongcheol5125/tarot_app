@@ -1,12 +1,14 @@
-import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:tarot_app/model/result.dart';
+import 'package:tarot_app/services/local_data_service.dart';
 
 class ResultController extends GetxController {
+  final LocalDataService localDataService;
+  ResultController({required this.localDataService});
+
   ScreenshotController screenshotController = ScreenshotController();
   Random random = Random();
   late Result result;
@@ -17,7 +19,6 @@ class ResultController extends GetxController {
   Rx<bool> isVisible = Rx(false);
   late List<int> lottoNumbers;
 
-  final box = GetStorage();
   String fileName = '';
   late List<Uint8List> captureList;
   List<Uint8List> noCaptureData = [];
@@ -124,22 +125,8 @@ class ResultController extends GetxController {
       // 위젯을 캡처하여 이미지로 저장
       final imageFile = await screenshotController.capture();
       print('캡쳐 성공 : ${imageFile}');
-
-      if (box.read('captureList') == null) {
-        noCaptureData.add(imageFile!);
-        List<dynamic> encodedList =
-            noCaptureData.map((data) => base64Encode(data)).toList();
-        box.write('captureList', encodedList);
-      } else {
-        List<dynamic> encodedList = box.read('captureList');
-        List<Uint8List> dataList = encodedList
-            .map((encodedData) => base64Decode(encodedData))
-            .toList();
-        dataList.add(imageFile!);
-        List<dynamic> _encodedList =
-            dataList.map((data) => base64Encode(data)).toList();
-        box.write('captureList', _encodedList);
-      }
+      // LocalDataService localDataService = Get.find();  이렇게 쓰는 방법도 있다.
+      await localDataService.saveImage(imageFile);
       print('getStorage에 데이터 저장 완료');
     } catch (e) {
       print('위젯 캡처 중 오류가 발생했습니다: $e');
