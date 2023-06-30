@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:tarot_app/widget/banner_widget.dart';
 import 'package:timer_builder/timer_builder.dart';
 
 import '../../routes/app_routes.dart';
@@ -108,23 +108,6 @@ class ResultPage extends GetWidget<ResultController> {
     );
   }
 
-  adMob(){
-    return Obx(() {
-              if (controller.bannerAd.value != null) {
-                return Align(
-                  child: Container(
-                    width: controller.bannerAd.value!.size.width.toDouble(),
-                    height: controller.bannerAd.value!.size.height.toDouble(),
-                    child: AdWidget(ad: controller.bannerAd.value!),
-                  ),
-                );
-              } else {
-                return SizedBox(height: 10, width: 10);
-              }
-            });
-  }
- 
- 
   @override
   Widget build(BuildContext context) {
     // 10초 있다가 뜨게 만듦
@@ -152,7 +135,7 @@ class ResultPage extends GetWidget<ResultController> {
             restartButton(),
             luckyPageButtons(),
             SizedBox(height: 50),
-            adMob(),
+            BannerWidget(),
           ],
         ),
       ),

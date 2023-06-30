@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 // import 'package:get_storage/get_storage.dart';  <== 정보 모두 삭제 버튼 사용 시 import할 것
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:tarot_app/widget/banner_widget.dart';
 
 import '../../routes/app_routes.dart';
 import 'initial_controller.dart';
@@ -11,10 +11,11 @@ import 'initial_controller.dart';
 class InitialPage extends GetWidget<InitialController> {
   const InitialPage({super.key});
 
-  // 
+  //
   initialTitle() {
     return Obx(
-      () => Visibility(  // visible이 true일 때 Visibility 안의 것들이 보이게 된다.
+      () => Visibility(
+        // visible이 true일 때 Visibility 안의 것들이 보이게 된다.
         visible: controller.isVisible.value,
         child: Column(
           children: [
@@ -70,13 +71,15 @@ class InitialPage extends GetWidget<InitialController> {
         children: [
           ElevatedButton(
             onPressed: () {
-              Get.toNamed(Routes.LUCKY_BOX_PAGE, arguments: {'initialTab': 1}); // 1은 럭키인증 신호
+              Get.toNamed(Routes.LUCKY_BOX_PAGE,
+                  arguments: {'initialTab': 1}); // 1은 럭키인증 신호
             },
             child: const Text('럭키인증'),
           ),
           ElevatedButton(
             onPressed: () {
-              Get.toNamed(Routes.LUCKY_BOX_PAGE, arguments: {'initialTab': 0}); // 0은 럭키박스 신호
+              Get.toNamed(Routes.LUCKY_BOX_PAGE,
+                  arguments: {'initialTab': 0}); // 0은 럭키박스 신호
             },
             child: const Text('럭키상자'),
           ),
@@ -93,22 +96,6 @@ class InitialPage extends GetWidget<InitialController> {
     );
   }
 
-  adMob(){
-    return Obx(() {
-            if (controller.bannerAd.value != null) {
-              return Align(
-                child: Container(
-                  width: controller.bannerAd.value!.size.width.toDouble(),
-                  height: controller.bannerAd.value!.size.height.toDouble(),
-                  child: AdWidget(ad: controller.bannerAd.value!),
-                ),
-              );
-            } else {
-              return const SizedBox(height: 10, width: 10);
-            }
-          });
-  }
-  
   @override
   Widget build(BuildContext context) {
     // 6초 지난 후 text들 보이게 설정
@@ -127,7 +114,7 @@ class InitialPage extends GetWidget<InitialController> {
           startButton(),
           luckyButtons(),
           const SizedBox(height: 15),
-          adMob(),
+          BannerWidget(),
         ],
       ),
     );

@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:tarot_app/model/post.dart';
 import 'package:tarot_app/utils/image_selector.dart';
+import 'package:tarot_app/widget/banner_widget.dart';
 
 import '../../routes/app_routes.dart';
 import 'lucky_box_controller.dart';
@@ -690,22 +690,6 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
     );
   }
 
-  adMob() {
-    return Obx(() {
-      if (controller.bannerAd.value != null) {
-        return Align(
-          child: Container(
-            width: controller.bannerAd.value!.size.width.toDouble(),
-            height: controller.bannerAd.value!.size.height.toDouble(),
-            child: AdWidget(ad: controller.bannerAd.value!),
-          ),
-        );
-      } else {
-        return SizedBox(height: 10, width: 10);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -731,7 +715,7 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                   ],
                 ),
               ),
-              adMob()
+              BannerWidget(),
             ],
           ),
         ),

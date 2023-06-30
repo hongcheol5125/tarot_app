@@ -7,9 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:tarot_app/ad_helper.dart';
 import 'package:tarot_app/model/post.dart';
 import 'package:tarot_app/utils/image_selector.dart';
 
@@ -29,10 +27,9 @@ class LuckyBoxController extends GetxController {
   final selectedImage1 = Rx<File?>(null);
   final selectedImage2 = Rx<File?>(null);
   final selectedImage3 = Rx<File?>(null);
-  Rx<BannerAd?> bannerAd = Rx<BannerAd?>(null);
 
   @override
-  void onInit() async{
+  void onInit() async {
     super.onInit();
     pageIndex.value = Get.arguments['initialTab'];
     // capture = Get.arguments['capture'];
@@ -50,29 +47,7 @@ class LuckyBoxController extends GetxController {
     luckyController = PageController(initialPage: pageIndex.value);
     initTopFiveView();
     initialData();
-    // 애드몹
-    await BannerAd(
-    adUnitId: AdHelper.bannerAdUnitId,
-    request: AdRequest(),
-    size: AdSize.banner,
-    listener: BannerAdListener(
-      onAdLoaded: (ad) {
-        print('###################ok###################');
-        bannerAd.value = ad as BannerAd?;
-        update();
-      },
-      onAdFailedToLoad: (ad, err) {
-        print('Failed to load a banner ad: ${err.message}');
-        ad.dispose();
-      },
-      onAdOpened: (Ad ad) => print('Ad opened.'),
-    // Called when an ad removes an overlay that covers the screen.
-    onAdClosed: (Ad ad) => print('Ad closed.'),
-    // Called when an impression occurs on the ad.
-    onAdImpression: (Ad ad) => print('Ad impression.'),
-    ),
-  ).load();
-  }
+     }
 
   // 이미지 캡쳐 메소드
   Future<void> saveImageToGallery(Uint8List imageBytes) async {
@@ -84,8 +59,7 @@ class LuckyBoxController extends GetxController {
     }
   }
 
-
-   // firestore에 제목, 닉네임, 시간, 이미지 등 저장
+  // firestore에 제목, 닉네임, 시간, 이미지 등 저장
   Future<void> onPressedUploadButton(BuildContext context) async {
     String titleText = titleC.text;
     String nicknameText = nicknameC.text;
@@ -98,14 +72,14 @@ class LuckyBoxController extends GetxController {
         .add(const Duration(hours: 9))
         .millisecondsSinceEpoch; // KST(한국 표준시)로 변환
 
-   /// fileName을 모두 date.toString()로 하면 다른 이미지여도 이름이 같아져서
-   /// 모두 마지막 이미지로 바뀐다. 그래서 urlText2, 3에는 각각 date +1,+2 해줌
+    /// fileName을 모두 date.toString()로 하면 다른 이미지여도 이름이 같아져서
+    /// 모두 마지막 이미지로 바뀐다. 그래서 urlText2, 3에는 각각 date +1,+2 해줌
     String? urlText1 =
         await uploadImage(selectedImage1.value!, fileName: date.toString());
-    String? urlText2 =
-        await uploadImage(selectedImage2.value, fileName: (date+1).toString());
-    String? urlText3 =
-        await uploadImage(selectedImage3.value, fileName: (date+2).toString());
+    String? urlText2 = await uploadImage(selectedImage2.value,
+        fileName: (date + 1).toString());
+    String? urlText3 = await uploadImage(selectedImage3.value,
+        fileName: (date + 2).toString());
     if (urlText1 == null) {
       Get.snackbar('이미지', '이미지를 한 개 이상 등록해주세요');
       return;
@@ -261,7 +235,7 @@ class LuckyBoxController extends GetxController {
 
   Rx<List<DocumentSnapshot>> documentsForTopFiveView = Rx([]);
 
-  // 조회수(views) Top5를 firestore에 저장 
+  // 조회수(views) Top5를 firestore에 저장
   initTopFiveView() async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -303,7 +277,6 @@ class LuckyBoxController extends GetxController {
   //   }
   // }
 
-
 // firebase storage에 이름을 fileName으로 하여 이미지(imageFile) 저장, imageUrl 뽑아냄
   Future<String?> uploadImage(File? imageFile,
       {required String fileName}) async {
@@ -341,7 +314,6 @@ class LuckyBoxController extends GetxController {
         .update(newData);
   }
 
-  
   Future<void> onPressedChangeButton(context, Post post) async {
     showDialog(
       context: context,
@@ -370,54 +342,39 @@ class LuckyBoxController extends GetxController {
                         ),
                       ),
                     ),
-                    Obx(() => selectedImage1.value ==
-                                            null
-                                        ? IconButton(
-                                            onPressed: () async {
-                                              File? file = await MediaPicker
-                                                  .singlePhoto();
-                                              if (file != null) {
-                                                selectedImage1
-                                                    .value = file;
-                                                setState(() {});
-                                              }
-                                            },
-                                            icon: Icon(
-                                                Icons.photo_album_outlined))
-                                        : Image.file(
-                                            selectedImage1.value!)),
-                                    Obx(() => selectedImage2.value ==
-                                            null
-                                        ? IconButton(
-                                            onPressed: () async {
-                                              File? file = await MediaPicker
-                                                  .singlePhoto();
-                                              if (file != null) {
-                                                selectedImage2
-                                                    .value = file;
-                                                setState(() {});
-                                              }
-                                            },
-                                            icon: Icon(
-                                                Icons.photo_album_outlined))
-                                        : Image.file(
-                                            selectedImage2.value!)),
-                                    Obx(() => selectedImage3.value ==
-                                            null
-                                        ? IconButton(
-                                            onPressed: () async {
-                                              File? file = await MediaPicker
-                                                  .singlePhoto();
-                                              if (file != null) {
-                                                selectedImage3
-                                                    .value = file;
-                                                setState(() {});
-                                              }
-                                            },
-                                            icon: Icon(
-                                                Icons.photo_album_outlined))
-                                        : Image.file(
-                                            selectedImage3.value!)),
+                    Obx(() => selectedImage1.value == null
+                        ? IconButton(
+                            onPressed: () async {
+                              File? file = await MediaPicker.singlePhoto();
+                              if (file != null) {
+                                selectedImage1.value = file;
+                                setState(() {});
+                              }
+                            },
+                            icon: Icon(Icons.photo_album_outlined))
+                        : Image.file(selectedImage1.value!)),
+                    Obx(() => selectedImage2.value == null
+                        ? IconButton(
+                            onPressed: () async {
+                              File? file = await MediaPicker.singlePhoto();
+                              if (file != null) {
+                                selectedImage2.value = file;
+                                setState(() {});
+                              }
+                            },
+                            icon: Icon(Icons.photo_album_outlined))
+                        : Image.file(selectedImage2.value!)),
+                    Obx(() => selectedImage3.value == null
+                        ? IconButton(
+                            onPressed: () async {
+                              File? file = await MediaPicker.singlePhoto();
+                              if (file != null) {
+                                selectedImage3.value = file;
+                                setState(() {});
+                              }
+                            },
+                            icon: Icon(Icons.photo_album_outlined))
+                        : Image.file(selectedImage3.value!)),
                     TextField(
                       controller: pwCheckC,
                       decoration: InputDecoration(
