@@ -113,7 +113,7 @@ class InitialPage extends GetWidget<InitialController> {
   Widget build(BuildContext context) {
     // 6초 지난 후 text들 보이게 설정
     Timer(
-      Duration(seconds: 6),
+      const Duration(seconds: 6),
       () {
         controller.showText();
       },
