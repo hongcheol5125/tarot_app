@@ -72,13 +72,13 @@ class InitialPage extends GetWidget<InitialController> {
             onPressed: () {
               Get.toNamed(Routes.LUCKY_BOX_PAGE, arguments: {'initialTab': 1}); // 1은 럭키인증 신호
             },
-            child: Text('럭키인증'),
+            child: const Text('럭키인증'),
           ),
           ElevatedButton(
             onPressed: () {
               Get.toNamed(Routes.LUCKY_BOX_PAGE, arguments: {'initialTab': 0}); // 0은 럭키박스 신호
             },
-            child: Text('럭키상자'),
+            child: const Text('럭키상자'),
           ),
 
           /// 이 버튼은 getstorage에 저장된 데이터들을 모두 지우는 버튼 (럭키상자에 저장된 사진들 모두 삭제됨)
