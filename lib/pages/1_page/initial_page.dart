@@ -33,17 +33,17 @@ class InitialPage extends GetWidget<InitialController> {
                     height: 50,
                     width: 50,
                     child: Image.asset('attachedfiles/initialpage/아이콘03.png')),
-                Text(
+                const Text(
                   '등 총 7가지의 운세!',
                   style: TextStyle(fontSize: 20),
                 ),
               ],
             ),
-            Text(
+            const Text(
               '오늘! 지금!',
               style: TextStyle(fontSize: 20),
             ),
-            Text(
+            const Text(
               '나의 럭키포인트(Lucky point)는??',
               style: TextStyle(fontSize: 20),
             ),
@@ -58,7 +58,7 @@ class InitialPage extends GetWidget<InitialController> {
       onPressed: () {
         Get.toNamed(Routes.CHECK_PAGE, arguments: 0);
       },
-      child: Text('START!!'),
+      child: const Text('START!!'),
     );
   }
 
@@ -104,7 +104,7 @@ class InitialPage extends GetWidget<InitialController> {
                 ),
               );
             } else {
-              return SizedBox(height: 10, width: 10);
+              return const SizedBox(height: 10, width: 10);
             }
           });
   }
