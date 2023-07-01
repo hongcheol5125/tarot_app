@@ -2,17 +2,21 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:tarot_app/model/post.dart';
 import 'package:tarot_app/services/local_data_service.dart';
+import 'package:tarot_app/services/post_service.dart';
 import 'package:tarot_app/utils/image_selector.dart';
 
 class LuckyBoxController extends GetxController {
   final LocalDataService localDataService;
-  LuckyBoxController({required this.localDataService});
+  final PostService postService;
+  LuckyBoxController({
+    required this.localDataService,
+    required this.postService,
+  });
   late PageController luckyController;
   late Rx<int> pageIndex = Rx(0);
   late List<Uint8List> captureData;
@@ -56,64 +60,26 @@ class LuckyBoxController extends GetxController {
     String titleText = titleC.text;
     String nicknameText = nicknameC.text;
     String passwordText = pwC.text;
-
-    // int koreaTime = DateTime.now().toUtc().add(const Duration(hours: 9)).millisecondsSinceEpoch; // KST(한국 표준시)로 변환
-
-    int date = DateTime.now()
-        .toUtc()
-        .add(const Duration(hours: 9))
-        .millisecondsSinceEpoch; // KST(한국 표준시)로 변환
-
-    /// fileName을 모두 date.toString()로 하면 다른 이미지여도 이름이 같아져서
-    /// 모두 마지막 이미지로 바뀐다. 그래서 urlText2, 3에는 각각 date +1,+2 해줌
-    String? urlText1 =
-        await uploadImage(selectedImage1.value!, fileName: date.toString());
-    String? urlText2 = await uploadImage(selectedImage2.value,
-        fileName: (date + 1).toString());
-    String? urlText3 = await uploadImage(selectedImage3.value,
-        fileName: (date + 2).toString());
-    if (urlText1 == null) {
-      Get.snackbar('이미지', '이미지를 한 개 이상 등록해주세요');
-      return;
+    List<File> files = [];
+    if (selectedImage1.value != null) {
+      files.add(selectedImage1.value!);
     }
-    List<String?> listUrlTexts = [urlText1, urlText2, urlText3];
-
-    Post post = Post(
-      title: titleText,
-      nickName: nicknameText,
-      password: passwordText,
-      images: listUrlTexts,
-      views: 0,
-      date: date,
-    );
-
-    try {
-      await FirebaseFirestore.instance
-          .collection('posts')
-          .doc(post.date.toString())
-          .set(post.toJson())
-          .then((value) => print("User Added"))
-          .catchError((error) => print("Failed to add user: $error"));
-      Get.snackbar('Success', 'Data created successfully!');
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to create data!');
-      print(e);
+    if (selectedImage2.value != null) {
+      files.add(selectedImage2.value!);
     }
-    // if (titleText.isNotEmpty && nickname.isNotEmpty && passwordText.length == 4) {
-    //   try {
-    //     await FirebaseFirestore.instance.collection('posts').add({
-    //       'title': titleText,
-    //       'nickname' : nicknameText,
-    //       'password' : passwordText,
-    //       'date' : dateText,
-    //     }).then((value) => print("User Added"))
-    //       .catchError((error) => print("Failed to add user: $error"));
-    //     Get.snackbar('Success', 'Data created successfully!');
-    //   } catch (e) {
-    //     Get.snackbar('Error', 'Failed to create data!');
-    //     print(e);
-    //   }
-    // }
+    if (selectedImage3.value != null) {
+      files.add(selectedImage3.value!);
+    }
+    if (await postService.uploadPost(
+      titleText: titleText,
+      nicknameText: nicknameText,
+      passwordText: passwordText,
+      files: files,
+    )) {
+      Get.showSnackbar(GetSnackBar(message: '업로드 성공'));
+    } else {
+      Get.showSnackbar(GetSnackBar(message: '업로드 실패'));
+    }
   }
 
 // 데이터 변경을 구독하고 변경 감지되면 변수 업데이트 함
@@ -269,23 +235,6 @@ class LuckyBoxController extends GetxController {
   //   }
   // }
 
-// firebase storage에 이름을 fileName으로 하여 이미지(imageFile) 저장, imageUrl 뽑아냄
-  Future<String?> uploadImage(File? imageFile,
-      {required String fileName}) async {
-    try {
-      Reference storageReference =
-          FirebaseStorage.instance.ref().child('images/$fileName');
-      UploadTask uploadTask = storageReference.putFile(imageFile!);
-      TaskSnapshot taskSnapshot = await uploadTask;
-      String imageUrl = await taskSnapshot.ref.getDownloadURL();
-      print(imageUrl);
-      return imageUrl;
-    } catch (e) {
-      print('Image upload failed: $e');
-      return null;
-    }
-  }
-
   // view수 올리는 메소드
   void incrementViewCount(String documentId) {
     FirebaseFirestore.instance
@@ -298,160 +247,73 @@ class LuckyBoxController extends GetxController {
         .catchError((error) => print('Failed to increment view count: $error'));
   }
 
-  // 게시물 수정
-  Future<void> updatePostData(String documentId, Map<String, dynamic> newData) {
-    return FirebaseFirestore.instance
-        .collection('posts')
-        .doc(documentId)
-        .update(newData);
+  onTapSaveButton(Post post) async {
+    String titleChangeText = titleChangeC.text;
+    if (titleChangeText.isEmpty) {
+      Get.snackbar('제목', '제목을 적어주세요');
+      return;
+    }
+    String nicknameChangeText = nicknameChangeC.text;
+    if (nicknameChangeText.isEmpty) {
+      Get.snackbar('닉네임', '닉네임을 적어주세요');
+      return; // return을 써주면 if문 읽고 빠져나와서 그 다음은 안읽는다.
+    }
+    if (selectedImage1.value == null) {
+      Get.snackbar('이미지', '이미지를 한 개 이상 선택해 주세요');
+      return;
+    }
+    String passwordCheckText = pwCheckC.text;
+    if (passwordCheckText != post.password) {
+      Get.snackbar('비밀번호', '비밀번호가 틀렸습니다');
+      return;
+    }
+
+    List<File> files = [];
+    if (selectedImage1.value != null) {
+      files.add(selectedImage1.value!);
+    } else {
+      Get.snackbar('이미지', '이미지를 한 개 이상 등록해주세요');
+      return;
+    }
+    if (selectedImage2.value != null) {
+      files.add(selectedImage2.value!);
+    }
+    if (selectedImage3.value != null) {
+      files.add(selectedImage3.value!);
+    }
+
+    if (await postService.updatePost(
+      documentId: post.date.toString(),
+      titleText: titleChangeText,
+      nicknameText: nicknameChangeText,
+      files: files,
+    )) {
+      Get.showSnackbar(GetSnackBar(message: '업로드 성공'));
+      return;
+    } else {
+      Get.showSnackbar(GetSnackBar(message: '업로드 실패'));
+      return;
+    }
   }
 
-  Future<void> onPressedChangeButton(context, Post post) async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return AlertDialog(
-              title: Text('수정'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: titleChangeC,
-                      decoration: InputDecoration(
-                        labelText: '제목',
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: TextField(
-                        controller: nicknameChangeC,
-                        decoration: InputDecoration(
-                          labelText: '닉네임',
-                        ),
-                      ),
-                    ),
-                    Obx(() => selectedImage1.value == null
-                        ? IconButton(
-                            onPressed: () async {
-                              File? file = await MediaPicker.singlePhoto();
-                              if (file != null) {
-                                selectedImage1.value = file;
-                                setState(() {});
-                              }
-                            },
-                            icon: Icon(Icons.photo_album_outlined))
-                        : Image.file(selectedImage1.value!)),
-                    Obx(() => selectedImage2.value == null
-                        ? IconButton(
-                            onPressed: () async {
-                              File? file = await MediaPicker.singlePhoto();
-                              if (file != null) {
-                                selectedImage2.value = file;
-                                setState(() {});
-                              }
-                            },
-                            icon: Icon(Icons.photo_album_outlined))
-                        : Image.file(selectedImage2.value!)),
-                    Obx(() => selectedImage3.value == null
-                        ? IconButton(
-                            onPressed: () async {
-                              File? file = await MediaPicker.singlePhoto();
-                              if (file != null) {
-                                selectedImage3.value = file;
-                                setState(() {});
-                              }
-                            },
-                            icon: Icon(Icons.photo_album_outlined))
-                        : Image.file(selectedImage3.value!)),
-                    TextField(
-                      controller: pwCheckC,
-                      decoration: InputDecoration(
-                        labelText: '비밀번호 확인',
-                      ),
-                    ),
-                    // 추가로 수정할 필드들을 TextField로 추가
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  child: Text('이미지 선택'),
-                  onPressed: () async {
-                    File? file = await MediaPicker.singlePhoto();
-                    if (file != null) {
-                      selectedImage1.value = file;
+  selectFirstImage() async {
+    File? file = await MediaPicker.singlePhoto();
+    if (file != null) {
+      selectedImage1.value = file;
+    }
+  }
 
-                      setState(() {});
-                    }
-                  },
-                ),
-                TextButton(
-                  onPressed: () async {
-                    String titleChangeText = titleChangeC.text;
-                    if (titleChangeText.isEmpty) {
-                      Get.snackbar('제목', '제목을 적어주세요');
-                      return;
-                    }
-                    String nicknameChangeText = nicknameChangeC.text;
-                    if (nicknameChangeText.isEmpty) {
-                      Get.snackbar('닉네임', '닉네임을 적어주세요');
-                      return; // return을 써주면 if문 읽고 빠져나와서 그 다음은 안읽는다.
-                    }
-                    if (selectedImage1.value == null) {
-                      Get.snackbar('이미지', '이미지를 한 개 이상 선택해 주세요');
-                      return;
-                    }
-                    String passwordCheckText = pwCheckC.text;
-                    if (passwordCheckText != post.password) {
-                      Get.snackbar('비밀번호', '비밀번호가 틀렸습니다');
-                      return;
-                    }
-                    int date = DateTime.now().millisecondsSinceEpoch;
+  selectSecondImage() async {
+    File? file = await MediaPicker.singlePhoto();
+    if (file != null) {
+      selectedImage2.value = file;
+    }
+  }
 
-                    String? urlText1 = await uploadImage(selectedImage1.value!,
-                        fileName: date.toString());
-                    String? urlText2 = await uploadImage(selectedImage2.value!,
-                        fileName: date.toString());
-                    String? urlText3 = await uploadImage(selectedImage3.value!,
-                        fileName: date.toString());
-                    if (urlText1 == null) {
-                      Get.snackbar('이미지', '이미지를 한 개 이상 등록해주세요');
-                      return;
-                    }
-                    List<String?> listUrlTexts = [urlText1, urlText2, urlText3];
-
-                    final newData = {
-                      'title': titleChangeC.text,
-                      'nickName': nicknameChangeC.text,
-                      'images': listUrlTexts,
-                      'date': DateTime.now()
-                          .toUtc()
-                          .add(const Duration(hours: 9))
-                          .millisecondsSinceEpoch,
-                    };
-                    updatePostData(post.date.toString(), newData).then((_) {
-                      Navigator.of(context).pop();
-                    }).catchError((error) {
-                      print('Failed to update post: $error');
-                    });
-                  },
-                  child: Text('저장'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('닫기'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
+  selectThirdImage() async {
+    File? file = await MediaPicker.singlePhoto();
+    if (file != null) {
+      selectedImage3.value = file;
+    }
   }
 }
