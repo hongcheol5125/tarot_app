@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:tarot_app/model/post.dart';
 import 'package:tarot_app/utils/image_selector.dart';
+import 'package:tarot_app/widget/banner_widget.dart';
 
 import '../../routes/app_routes.dart';
 import 'lucky_box_controller.dart';
@@ -455,9 +455,8 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
 
                             // 수정 버튼
                             TextButton(
-                              onPressed: () async {
-                                await controller.onPressedChangeButton(
-                                    context, post);
+                              onPressed: () {
+                                showChangeDialog(post);
                               },
                               child: Text('수정'),
                             ),
@@ -654,9 +653,8 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
 
                             // 수정 버튼
                             TextButton(
-                              onPressed: () async {
-                                await controller.onPressedChangeButton(
-                                    context, post);
+                              onPressed: () {
+                                showChangeDialog(post);
                               },
                               child: Text('수정'),
                             ),
@@ -690,22 +688,6 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
     );
   }
 
-  adMob() {
-    return Obx(() {
-      if (controller.bannerAd.value != null) {
-        return Align(
-          child: Container(
-            width: controller.bannerAd.value!.size.width.toDouble(),
-            height: controller.bannerAd.value!.size.height.toDouble(),
-            child: AdWidget(ad: controller.bannerAd.value!),
-          ),
-        );
-      } else {
-        return SizedBox(height: 10, width: 10);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -731,11 +713,77 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                   ],
                 ),
               ),
-              adMob()
+              BannerWidget(),
             ],
           ),
         ),
       ),
     );
   }
+
+  showChangeDialog(Post post) => showDialog(
+        context: Get.context!, //getx 라이브러리
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('수정'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: controller.titleChangeC,
+                    decoration: InputDecoration(
+                      labelText: '제목',
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: TextField(
+                      controller: controller.nicknameChangeC,
+                      decoration: InputDecoration(
+                        labelText: '닉네임',
+                      ),
+                    ),
+                  ),
+                  Obx(() => controller.selectedImage1.value == null
+                      ? IconButton(
+                          onPressed: controller.selectFirstImage,
+                          icon: Icon(Icons.photo_album_outlined))
+                      : Image.file(controller.selectedImage1.value!)),
+                  Obx(() => controller.selectedImage2.value == null
+                      ? IconButton(
+                          onPressed: controller.selectSecondImage,
+                          icon: Icon(Icons.photo_album_outlined))
+                      : Image.file(controller.selectedImage2.value!)),
+                  Obx(() => controller.selectedImage3.value == null
+                      ? IconButton(
+                          onPressed: controller.selectThirdImage,
+                          icon: Icon(Icons.photo_album_outlined))
+                      : Image.file(controller.selectedImage3.value!)),
+                  TextField(
+                    controller: controller.pwCheckC,
+                    decoration: InputDecoration(
+                      labelText: '비밀번호 확인',
+                    ),
+                  ),
+                  // 추가로 수정할 필드들을 TextField로 추가
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => controller.onTapSaveButton(post),
+                child: Text('저장'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('닫기'),
+              ),
+            ],
+          );
+        },
+      );
 }

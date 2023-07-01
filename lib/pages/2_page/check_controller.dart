@@ -2,8 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:tarot_app/ad_helper.dart';
 import 'package:timer_builder/timer_builder.dart';
 
 import '../../routes/app_routes.dart';
@@ -26,37 +24,13 @@ class CheckController extends GetxController {
   Rx<String> imagePath1 = Rx('attachedfiles/tarotcard/대기카드.png');
   Rx<String> imagePath2 = Rx('attachedfiles/tarotcard/대기카드.png');
   Rx<String> imagePath3 = Rx('attachedfiles/tarotcard/대기카드.png');
-  Rx<BannerAd?> bannerAd = Rx<BannerAd?>(null);
 
   @override
-  void onInit() async{
+  void onInit() async {
     super.onInit();
     initialTab = Get.arguments;
     pageIndex = Rx(initialTab);
     checkController = PageController(initialPage: initialTab);
-
-// 애드몹
-    await BannerAd(
-    adUnitId: AdHelper.bannerAdUnitId,
-    request: AdRequest(),
-    size: AdSize.banner,
-    listener: BannerAdListener(
-      onAdLoaded: (ad) {
-        print('###################ok###################');
-        bannerAd.value = ad as BannerAd?;
-        update();
-      },
-      onAdFailedToLoad: (ad, err) {
-        print('Failed to load a banner ad: ${err.message}');
-        ad.dispose();
-      },
-      onAdOpened: (Ad ad) => print('Ad opened.'),
-    // Called when an ad removes an overlay that covers the screen.
-    onAdClosed: (Ad ad) => print('Ad closed.'),
-    // Called when an impression occurs on the ad.
-    onAdImpression: (Ad ad) => print('Ad impression.'),
-    ),
-  ).load();
   }
 
   onChangedCheckNickName(value) {
@@ -121,7 +95,7 @@ class CheckController extends GetxController {
     changeImage1();
     if (imagePath1.value == imagePath2.value ||
         imagePath1.value == imagePath3.value) {
-     return changeImage1();
+      return changeImage1();
     }
   }
 
@@ -129,7 +103,7 @@ class CheckController extends GetxController {
     changeImage2();
     if (imagePath2.value == imagePath1.value ||
         imagePath2.value == imagePath3.value) {
-     return changeImage2();
+      return changeImage2();
     }
   }
 
@@ -142,7 +116,7 @@ class CheckController extends GetxController {
   }
 
   randomCard1() {
-   return Obx(
+    return Obx(
       () => GestureDetector(
         onTap: onPressedChange1,
         child: Container(
@@ -160,7 +134,7 @@ class CheckController extends GetxController {
   }
 
   randomCard2() {
-   return Obx(
+    return Obx(
       () => GestureDetector(
         onTap: onPressedChange2,
         child: Container(
@@ -178,7 +152,7 @@ class CheckController extends GetxController {
   }
 
   randomCard3() {
-   return Obx(
+    return Obx(
       () => GestureDetector(
         onTap: onPressedChange3,
         child: Container(
@@ -195,17 +169,17 @@ class CheckController extends GetxController {
     );
   }
 
-  timeBuilder(){
+  timeBuilder() {
     return TimerBuilder.periodic(
-          Duration(seconds: 1),
-          builder: (context) {
-            // 한국 시간은 표준시간 + 9
-            DateTime date = DateTime.now().add(Duration(hours: 9));
-            return Text(
-              '${date.year}.${date.month}.${date.day}  ${date.hour} : ${date.minute} : ${date.second}',
-              style: TextStyle(fontSize: 20),
-            );
-          },
+      Duration(seconds: 1),
+      builder: (context) {
+        // 한국 시간은 표준시간 + 9
+        DateTime date = DateTime.now().add(Duration(hours: 9));
+        return Text(
+          '${date.year}.${date.month}.${date.day}  ${date.hour} : ${date.minute} : ${date.second}',
+          style: TextStyle(fontSize: 20),
         );
+      },
+    );
   }
 }
