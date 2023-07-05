@@ -16,7 +16,9 @@ class ResultController extends GetxController {
   late int card2;
   late int card3;
   late int luckyPoint;
-  Rx<bool> isVisible = Rx(false);
+  Rx<bool> isVisibleTexts = Rx(false);
+  Rx<bool> isVisibleButtons = Rx(false);
+
   late List<int> lottoNumbers;
 
   String fileName = '';
@@ -114,13 +116,27 @@ class ResultController extends GetxController {
   }
 
   showText() {
-    isVisible.value = true;
+    isVisibleTexts.value = true;
+  }
+
+  showButtons() {
+    isVisibleButtons.value = true;
   }
 
   captureWidget() async {
     // 위젯 캡처를 위해 잠시 지연
     try {
-      await Future.delayed(Duration(seconds: 14));
+      await Future.delayed(
+        luckyPoint <= 60
+            ? Duration(seconds: 9)
+            : luckyPoint > 60 && luckyPoint <= 70
+                ? Duration(seconds: 10)
+                : luckyPoint > 70 && luckyPoint <= 80
+                    ? Duration(seconds: 11)
+                    : luckyPoint > 80 && luckyPoint <= 90
+                        ? Duration(seconds: 12)
+                        : Duration(seconds: 13),
+      );
 
       // 위젯을 캡처하여 이미지로 저장
       final imageFile = await screenshotController.capture();

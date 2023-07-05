@@ -26,8 +26,9 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
         child: Text('럭키상자'),
         style: ElevatedButton.styleFrom(
             minimumSize: Size(100, 50),
-            backgroundColor:
-                controller.pageIndex.value == 0 ? Colors.blue : Colors.grey),
+            backgroundColor: controller.pageIndex.value == 0
+                ? Color.fromRGBO(252, 199, 3, 1)
+                : Colors.grey),
       ),
     );
   }
@@ -45,8 +46,9 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
         child: Text('럭키인증'),
         style: ElevatedButton.styleFrom(
             minimumSize: Size(100, 50),
-            backgroundColor:
-                controller.pageIndex.value == 1 ? Colors.blue : Colors.grey),
+            backgroundColor: controller.pageIndex.value == 1
+                ? Color.fromRGBO(252, 199, 3, 1)
+                : Colors.grey),
       ),
     );
   }
@@ -107,10 +109,12 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
             },
           ),
         ),
-        SizedBox(height: 30),
+        SizedBox(height: 20),
         ElevatedButton(
           style: ButtonStyle(
-            minimumSize: MaterialStateProperty.all(Size(150, 150)), // 최소 크기 설정
+            backgroundColor: MaterialStateProperty.all<Color>(
+                Color.fromRGBO(252, 180, 3, 1)),
+            minimumSize: MaterialStateProperty.all(Size(100, 100)), // 최소 크기 설정
             padding: MaterialStateProperty.all(EdgeInsets.all(10)),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
@@ -139,6 +143,10 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                    Color.fromRGBO(252, 180, 3, 1),
+                  )),
                   onPressed: () {
                     showDialog(
                       context: context,
@@ -420,55 +428,64 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                           },
                         );
                       },
-                      child: ListTile(
-                        key: ValueKey(index),
-                        title: Row(
-                          children: [
-                            Text(titleText),
-                            Text(title),
-                            SizedBox(
-                              height: 30,
-                              width: 30,
-                              child: Image.network(imgUrl1),
-                            ),
-                            imgUrl2 != null
-                                ? SizedBox(
-                                    height: 30,
-                                    width: 30,
-                                    child: Image.network(imgUrl2),
-                                  )
-                                : SizedBox(
-                                    height: 30,
-                                    width: 30,
-                                  ),
-                            imgUrl3 != null
-                                ? SizedBox(
-                                    height: 30,
-                                    width: 30,
-                                    child: Image.network(imgUrl3),
-                                  )
-                                : SizedBox(
-                                    height: 30,
-                                    width: 30,
-                                  ),
-                            Spacer(),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            key: ValueKey(index),
+                            title: Row(
+                              children: [
+                                Text(titleText),
+                                Text(title),
+                                SizedBox(
+                                  height: 30,
+                                  width: 30,
+                                  child: Image.network(imgUrl1),
+                                ),
+                                imgUrl2 != null
+                                    ? SizedBox(
+                                        height: 30,
+                                        width: 30,
+                                        child: Image.network(imgUrl2),
+                                      )
+                                    : SizedBox(
+                                        height: 30,
+                                        width: 30,
+                                      ),
+                                imgUrl3 != null
+                                    ? SizedBox(
+                                        height: 30,
+                                        width: 30,
+                                        child: Image.network(imgUrl3),
+                                      )
+                                    : SizedBox(
+                                        height: 30,
+                                        width: 30,
+                                      ),
+                                Spacer(),
 
-                            // 수정 버튼
-                            TextButton(
-                              onPressed: () {
-                                showChangeDialog(post);
-                              },
-                              child: Text('수정'),
+                                // 수정 버튼
+                                TextButton(
+                                  onPressed: () {
+                                    showChangeDialog(post);
+                                  },
+                                  child: Text('수정'),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        subtitle: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('${nickName.substring(0, 1)}**'),
-                            Text(showDate),
-                          ],
-                        ),
+                            subtitle: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('${nickName.substring(0, 1)}**'),
+                                Text(showDate),
+                              ],
+                            ),
+                          ),
+                          // 마지막 항목은 구분선을 추가하지 않음
+                          const Divider(
+                            color: Colors.white,
+                            thickness: 1.0,
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -618,7 +635,9 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                           },
                         );
                       },
-                      child: ListTile(
+                      child: Column(
+                        children: [
+                          ListTile(
                         key: ValueKey(index),
                         title: Row(
                           children: [
@@ -668,6 +687,12 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                           ],
                         ),
                       ),
+                      Divider(
+                        color: Colors.white,
+                        thickness: 1.0,
+                      )
+                        ],
+                      ),
                     );
                   },
                 ),
@@ -677,6 +702,10 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
           Padding(
             padding: const EdgeInsets.only(top: 20),
             child: ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                Color.fromRGBO(252, 180, 3, 1),
+              )),
               onPressed: () {
                 Get.offAllNamed(Routes.INITIAL_PAGE);
               },
@@ -692,6 +721,7 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Color.fromRGBO(252, 199, 3, 1),
         body: Padding(
           padding: const EdgeInsets.only(top: 20),
           child: Column(
@@ -714,6 +744,7 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
                 ),
               ),
               BannerWidget(),
+              SizedBox(height: 15)
             ],
           ),
         ),
