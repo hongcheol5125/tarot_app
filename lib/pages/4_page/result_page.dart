@@ -15,7 +15,13 @@ class ResultPage extends GetWidget<ResultController> {
   delayedTime() {
     return Obx(
       () => Visibility(
-        visible: controller.isVisible.value,
+        visible: controller.isVisibleTexts.value,
+        replacement: Container(
+          // 왜 안되지...?
+          height: 25,
+          width: 20,
+          color: Color.fromRGBO(252, 199, 3, 1),
+        ),
         child: TimerBuilder.periodic(
           Duration(seconds: 1),
           builder: (context) {
@@ -34,9 +40,22 @@ class ResultPage extends GetWidget<ResultController> {
   delayedLuckyPoint() {
     return Obx(
       () => Visibility(
-        visible: controller.isVisible.value,
-        child: controller.isVisible.value
-            ? Text('나의 럭키포인트(Lucky Point)는 ${controller.luckyPoint}!!')
+        visible: controller.isVisibleTexts.value,
+        replacement: Container(
+          // 왜 안되지...?
+          height: 25,
+          width: 20,
+          color: Color.fromRGBO(252, 199, 3, 1),
+        ),
+        child: controller.isVisibleTexts.value
+            ? Column(
+                children: [
+                  Text('나의 럭키포인트(Lucky Point)는 ${controller.luckyPoint}!!'),
+                  Text(
+                    '나의 행운 숫자 ${controller.lottoNumbers[0]}, ${controller.lottoNumbers[1]}, ${controller.lottoNumbers[2]}, ${controller.lottoNumbers[3]}, ${controller.lottoNumbers[4]}, ${controller.lottoNumbers[5]}',
+                  ),
+                ],
+              )
             : Container(
                 // 왜 안되지...?
                 height: 20,
@@ -47,15 +66,16 @@ class ResultPage extends GetWidget<ResultController> {
     );
   }
 
-  delayedLuckyNumber() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-            '나의 행운 숫자 ${controller.lottoNumbers[0]}, ${controller.lottoNumbers[1]}, ${controller.lottoNumbers[2]}, ${controller.lottoNumbers[3]}, ${controller.lottoNumbers[4]}, ${controller.lottoNumbers[5]}'),
-      ],
-    );
-  }
+  // delayedLuckyNumber() {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Text(
+  //         '나의 행운 숫자 ${controller.lottoNumbers[0]}, ${controller.lottoNumbers[1]}, ${controller.lottoNumbers[2]}, ${controller.lottoNumbers[3]}, ${controller.lottoNumbers[4]}, ${controller.lottoNumbers[5]}',
+  //       ),
+  //     ],
+  //   );
+  // }
 
   luckyPyramid() {
     return SizedBox(
@@ -72,39 +92,73 @@ class ResultPage extends GetWidget<ResultController> {
   }
 
   restartButton() {
-    return ElevatedButton(
-      onPressed: () {
-        controller.isButtonDisabled.value
-            ? null
-            : Get.offAllNamed(Routes.INITIAL_PAGE);
-      },
-      child: Text('restart!!'),
+    return Obx(
+      () => Visibility(
+        visible: controller.isVisibleButtons.value,
+        child: controller.isVisibleButtons.value
+            ? TextButton(
+                onPressed: () {
+                  Get.offAllNamed(Routes.INITIAL_PAGE);
+                },
+                child: Text('restart!!'),
+              )
+            : Container(
+                // 왜 안되지...?
+                height: 20,
+                width: 20,
+                color: Colors.red,
+              ),
+      ),
     );
   }
 
   luckyPageButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            controller.isButtonDisabled.value
-                ? null
-                : Get.toNamed(Routes.LUCKY_BOX_PAGE,
-                    arguments: {'initialTab': 1});
-          },
-          child: Text('럭키인증'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            controller.isButtonDisabled.value
-                ? null
-                : Get.toNamed(Routes.LUCKY_BOX_PAGE,
-                    arguments: {'initialTab': 0});
-          },
-          child: Text('럭키박스'),
-        ),
-      ],
+    return Obx(
+      () => Visibility(
+        visible: controller.isVisibleButtons.value,
+        child: controller.isVisibleButtons.value
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Get.toNamed(Routes.LUCKY_BOX_PAGE,
+                          arguments: {'initialTab': 1});
+                    },
+                    child: Text('럭키인증'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Get.toNamed(Routes.LUCKY_BOX_PAGE,
+                          arguments: {'initialTab': 0});
+                    },
+                    child: Text('럭키박스'),
+                  ),
+                ],
+              )
+            : Container(
+                // 왜 안되지...?
+                height: 20,
+                width: 20,
+                color: Colors.red,
+              ),
+      ),
+    );
+  }
+
+  delayedAdMob() {
+    return Obx(
+      () => Visibility(
+        visible: controller.isVisibleButtons.value,
+        child: controller.isVisibleButtons.value
+            ? BannerWidget()
+            : Container(
+                // 왜 안되지...?
+                height: 20,
+                width: 20,
+                color: Colors.red,
+              ),
+      ),
     );
   }
 
@@ -112,30 +166,56 @@ class ResultPage extends GetWidget<ResultController> {
   Widget build(BuildContext context) {
     // 10초 있다가 뜨게 만듦
     Timer(
-      Duration(seconds: 10),
+      controller.luckyPoint <= 60
+          ? Duration(seconds: 8)
+          : controller.luckyPoint > 60 && controller.luckyPoint <= 70
+              ? Duration(seconds: 9)
+              : controller.luckyPoint > 70 && controller.luckyPoint <= 80
+                  ? Duration(seconds: 10)
+                  : controller.luckyPoint > 80 && controller.luckyPoint <= 90
+                      ? Duration(seconds: 11)
+                      : Duration(seconds: 12),
       () {
         controller.showText();
       },
     );
+    Timer(
+      controller.luckyPoint <= 60
+          ? Duration(seconds: 9)
+          : controller.luckyPoint > 60 && controller.luckyPoint <= 70
+              ? Duration(seconds: 10)
+              : controller.luckyPoint > 70 && controller.luckyPoint <= 80
+                  ? Duration(seconds: 11)
+                  : controller.luckyPoint > 80 && controller.luckyPoint <= 90
+                      ? Duration(seconds: 12)
+                      : Duration(seconds: 13),
+      () {
+        controller.showButtons();
+      },
+    );
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Color.fromRGBO(252, 199, 3, 1),
         body: Column(
           children: [
             Screenshot(
               controller: controller.screenshotController,
               child: Column(
                 children: [
+                  SizedBox(height: 30),
                   delayedTime(),
                   delayedLuckyPoint(),
-                  delayedLuckyNumber(),
+                  SizedBox(height: 15),
+                  // delayedLuckyNumber(),
                   luckyPyramid(),
+                  SizedBox(height: 20),
                 ],
               ),
             ),
             restartButton(),
             luckyPageButtons(),
-            SizedBox(height: 50),
-            BannerWidget(),
+            SizedBox(height: 20),
+            delayedAdMob(),
           ],
         ),
       ),
