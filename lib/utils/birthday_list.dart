@@ -153,7 +153,7 @@ List<String> hours = [
 ];
 List<String> minutes = [
   '분',
-  '0',
-  '30',
+  '0~30',
+  '30~60',
   
 ];

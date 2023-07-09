@@ -720,32 +720,35 @@ class LuckyBoxPage extends GetWidget<LuckyBoxController> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: Color.fromRGBO(252, 199, 3, 1),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 20),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  boxButton(),
-                  certificationButton(),
-                ],
-              ),
-              SizedBox(height: 15),
-              Expanded(
-                child: PageView(
-                  controller: controller.luckyController,
-                  children: <Widget>[
-                    luckyBox(),
-                    luckyCertification(context),
+      child: WillPopScope(
+        onWillPop: controller.onWillPop,
+        child: Scaffold(
+          backgroundColor: Color.fromRGBO(252, 199, 3, 1),
+          body: Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    boxButton(),
+                    certificationButton(),
                   ],
                 ),
-              ),
-              BannerWidget(),
-              SizedBox(height: 15)
-            ],
+                SizedBox(height: 15),
+                Expanded(
+                  child: PageView(
+                    controller: controller.luckyController,
+                    children: <Widget>[
+                      luckyBox(),
+                      luckyCertification(context),
+                    ],
+                  ),
+                ),
+                BannerWidget(),
+                SizedBox(height: 15)
+              ],
+            ),
           ),
         ),
       ),

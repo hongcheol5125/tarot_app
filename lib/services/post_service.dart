@@ -17,7 +17,7 @@ class PostService extends GetxService {
     required String titleText,
     required String nicknameText,
     required String passwordText,
-    required List<File> files,
+    required List<File?> files,
   }) async {
     bool result = false;
     try {
@@ -52,7 +52,7 @@ class PostService extends GetxService {
     required String documentId,
     required String titleText,
     required String nicknameText,
-    required List<File> files,
+    required List<File?> files,
   }) async {
     bool result = false;
     try {

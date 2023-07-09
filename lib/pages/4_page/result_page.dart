@@ -77,19 +77,7 @@ class ResultPage extends GetWidget<ResultController> {
   //   );
   // }
 
-  luckyPyramid() {
-    return SizedBox(
-      child: controller.luckyPoint <= 60
-          ? Image.asset('attachedfiles/levelfile/g-1.gif')
-          : controller.luckyPoint > 60 && controller.luckyPoint <= 70
-              ? Image.asset('attachedfiles/levelfile/g-2.gif')
-              : controller.luckyPoint > 70 && controller.luckyPoint <= 80
-                  ? Image.asset('attachedfiles/levelfile/g-3.gif')
-                  : controller.luckyPoint > 80 && controller.luckyPoint <= 90
-                      ? Image.asset('attachedfiles/levelfile/g-4.gif')
-                      : Image.asset('attachedfiles/levelfile/g-5.gif'),
-    );
-  }
+  
 
   restartButton() {
     return Obx(
@@ -122,14 +110,14 @@ class ResultPage extends GetWidget<ResultController> {
                 children: [
                   TextButton(
                     onPressed: () {
-                      Get.toNamed(Routes.LUCKY_BOX_PAGE,
+                      Get.offNamed(Routes.LUCKY_BOX_PAGE,
                           arguments: {'initialTab': 1});
                     },
                     child: Text('럭키인증'),
                   ),
                   TextButton(
                     onPressed: () {
-                      Get.toNamed(Routes.LUCKY_BOX_PAGE,
+                      Get.offNamed(Routes.LUCKY_BOX_PAGE,
                           arguments: {'initialTab': 0});
                     },
                     child: Text('럭키박스'),
@@ -167,28 +155,28 @@ class ResultPage extends GetWidget<ResultController> {
     // 10초 있다가 뜨게 만듦
     Timer(
       controller.luckyPoint <= 60
-          ? Duration(seconds: 8)
+          ? Duration(seconds: 9)
           : controller.luckyPoint > 60 && controller.luckyPoint <= 70
-              ? Duration(seconds: 9)
+              ? Duration(seconds: 10)
               : controller.luckyPoint > 70 && controller.luckyPoint <= 80
-                  ? Duration(seconds: 10)
+                  ? Duration(seconds: 12)
                   : controller.luckyPoint > 80 && controller.luckyPoint <= 90
-                      ? Duration(seconds: 11)
-                      : Duration(seconds: 12),
+                      ? Duration(seconds: 15)
+                      : Duration(seconds: 16),
       () {
         controller.showText();
       },
     );
     Timer(
       controller.luckyPoint <= 60
-          ? Duration(seconds: 9)
+          ? Duration(seconds: 10)
           : controller.luckyPoint > 60 && controller.luckyPoint <= 70
-              ? Duration(seconds: 10)
+              ? Duration(seconds: 11)
               : controller.luckyPoint > 70 && controller.luckyPoint <= 80
-                  ? Duration(seconds: 11)
+                  ? Duration(seconds: 13)
                   : controller.luckyPoint > 80 && controller.luckyPoint <= 90
-                      ? Duration(seconds: 12)
-                      : Duration(seconds: 13),
+                      ? Duration(seconds: 16)
+                      : Duration(seconds: 17),
       () {
         controller.showButtons();
       },
@@ -207,7 +195,7 @@ class ResultPage extends GetWidget<ResultController> {
                   delayedLuckyPoint(),
                   SizedBox(height: 15),
                   // delayedLuckyNumber(),
-                  luckyPyramid(),
+                  controller.luckyPyramid(),
                   SizedBox(height: 20),
                 ],
               ),

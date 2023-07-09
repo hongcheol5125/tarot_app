@@ -90,7 +90,10 @@ class CheckPage extends GetWidget<CheckController> {
                 padding: const EdgeInsets.fromLTRB(30, 16, 30, 16),
                 child: Row(
                   children: [
-                    Text('이름 :', style: TextStyle(fontSize: 15),),
+                    Text(
+                      '이름 :',
+                      style: TextStyle(fontSize: 15),
+                    ),
                     SizedBox(width: 20),
                     Expanded(
                       child: TextField(
@@ -111,23 +114,29 @@ class CheckPage extends GetWidget<CheckController> {
                         ),
                       ),
                     ),
+                    Text('생략'),
                   ],
                 ),
               ),
             ),
-          
+
             // 생년월일 드롭다운
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text('생년월일 :', style: TextStyle(fontSize: 15),),
+                  Text(
+                    '생년월일 :',
+                    style: TextStyle(fontSize: 15),
+                  ),
                   SizedBox(
                     child: Obx(
                       () => DropdownButton<String>(
-                          value: controller.dropdownYear.value, // 이걸 적어줘야 처음 숫자 뜬다.
-                          items: years.map<DropdownMenuItem<String>>((String value) {
+                          value: controller
+                              .dropdownYear.value, // 이걸 적어줘야 처음 숫자 뜬다.
+                          items: years
+                              .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -139,8 +148,10 @@ class CheckPage extends GetWidget<CheckController> {
                   SizedBox(
                     child: Obx(
                       () => DropdownButton<String>(
-                          value: controller.dropdownMonth.value, // 이걸 적어줘야 처음 숫자 뜬다.
-                          items: months.map<DropdownMenuItem<String>>((String value) {
+                          value: controller
+                              .dropdownMonth.value, // 이걸 적어줘야 처음 숫자 뜬다.
+                          items: months
+                              .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -152,8 +163,10 @@ class CheckPage extends GetWidget<CheckController> {
                   SizedBox(
                     child: Obx(
                       () => DropdownButton<String>(
-                          value: controller.dropdownDay.value, // 이걸 적어줘야 처음 숫자 뜬다.
-                          items: days.map<DropdownMenuItem<String>>((String value) {
+                          value:
+                              controller.dropdownDay.value, // 이걸 적어줘야 처음 숫자 뜬다.
+                          items: days
+                              .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -165,19 +178,24 @@ class CheckPage extends GetWidget<CheckController> {
                 ],
               ),
             ),
-          
+
             //태어난 시각 드롭다운 + 체크박스
             Padding(
-              padding: const EdgeInsets.only(bottom: 30),
+              padding: const EdgeInsets.only(bottom: 30, left: 30, right: 30),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text('태어난 시간 :', style: TextStyle(fontSize: 15),),
+                  Text(
+                    '태어난 시간 :',
+                    style: TextStyle(fontSize: 15),
+                  ),
                   SizedBox(
                     child: Obx(
                       () => DropdownButton<String>(
-                          value: controller.dropdownHour.value, // 이걸 적어줘야 처음 숫자 뜬다.
-                          items: hours.map<DropdownMenuItem<String>>((String value) {
+                          value: controller
+                              .dropdownHour.value, // 이걸 적어줘야 처음 숫자 뜬다.
+                          items: hours
+                              .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -189,9 +207,10 @@ class CheckPage extends GetWidget<CheckController> {
                   SizedBox(
                     child: Obx(
                       () => DropdownButton<String>(
-                          value: controller.dropdownMinute.value, // 이걸 적어줘야 처음 숫자 뜬다.
-                          items:
-                              minutes.map<DropdownMenuItem<String>>((String value) {
+                          value: controller
+                              .dropdownMinute.value, // 이걸 적어줘야 처음 숫자 뜬다.
+                          items: minutes
+                              .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -213,11 +232,11 @@ class CheckPage extends GetWidget<CheckController> {
                       ),
                     ),
                   ),
+                  Text('생략'),
                 ],
               ),
             ),
-            
-          
+
             // NEXT 버튼(타로카드 페이지로 가기)
             TextButton(
               onPressed: () {
@@ -345,7 +364,7 @@ class CheckPage extends GetWidget<CheckController> {
         SizedBox(height: 40),
         controller.timeBuilder(),
         SizedBox(height: 40),
-        ElevatedButton(
+        TextButton(
           onPressed: () {
             // context때문에 controller로 못 넘기는듯
             if (controller.imagePath1.value == 'attachedfiles/tarotcard/대기카드.png' ||
@@ -390,7 +409,9 @@ class CheckPage extends GetWidget<CheckController> {
                 controller.dropdownMinute.value != '분') {
               birthTime = Duration(
                 hours: int.parse(controller.dropdownHour.value),
-                minutes: int.parse(controller.dropdownMinute.value),
+                minutes: controller.dropdownMinute.value == '0~30'
+                ? 0
+                : 31,
               );
             }
 
@@ -409,12 +430,7 @@ class CheckPage extends GetWidget<CheckController> {
               lottoPoint: null,
             );
 
-            Get.toNamed(Routes.RESULT_PAGE, arguments: result);
-            // VV잘 넘어가는지 확인
-            // print('------------------------------------');
-            // print(result.birthDay);
-            // print(result.birthTime);
-            // print(result.name);
+            Get.offNamed(Routes.RESULT_PAGE, arguments: result);
           },
           child: Text('NEXT!!'),
         ),
