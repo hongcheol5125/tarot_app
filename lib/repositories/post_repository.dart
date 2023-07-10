@@ -22,5 +22,30 @@ class PostRepository extends GetxService {
     return postCollection.doc(documentId).update(newData);
   }
 
-  
+  // Future<bool> updatePostData(String documentId, Map<String, dynamic> newData) async{
+  //   bool result = false;
+  //   try{
+  //     postCollection.doc(documentId).update(newData);
+  //     result = true;
+  //   } catch(e){
+  //     print(e);
+  //   }
+  //   return result;
+  //   // return postCollection.doc(documentId).update(newData);
+  // }
+
+// pagination
+  Future<void> initialData(
+      {required int perPage,
+      required Rx<List<DocumentSnapshot>> documents}) async {
+    try {
+      QuerySnapshot querySnapshot = await postCollection
+          .orderBy('date', descending: true)
+          .limit(perPage)
+          .get();
+      documents.value = querySnapshot.docs; //
+    } catch (e) {
+      print(e);
+    }
+  }
 }

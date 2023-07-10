@@ -78,4 +78,8 @@ class PostService extends GetxService {
     } catch (e) {}
     return result;
   }
+
+  Future<void> insertInitialData() async{
+   await postRepository.initialData(perPage: 5, documents: Rx([]));
+  }
 }

@@ -43,7 +43,7 @@ class LuckyBoxController extends GetxController {
     print(captureData);
     luckyController = PageController(initialPage: pageIndex.value);
     initTopFiveView();
-    initialData();
+    postService.insertInitialData();
   }
 
   // 이미지 캡쳐 메소드
