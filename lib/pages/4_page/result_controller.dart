@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:tarot_app/model/result.dart';
@@ -30,7 +31,7 @@ class ResultController extends GetxController {
   void onInit() async {
     super.onInit();
     result = Get.arguments;
-    disableButton();
+    
     // 생년월일에 따른 랜덤숫자(20~30중 하나)
     result.birthPoint = random.nextInt(11) + 20;
     print('birthPoint : ${result.birthPoint}');
@@ -107,12 +108,35 @@ class ResultController extends GetxController {
 
     lottoNumbers = generateLottoNumbers(6);
 
+    
+    
+
     print('lottoNumbers : $lottoNumbers');
 
     luckyPoint = result.birthPoint! + result.cardPoint! + result.randomPoint!;
     print('luckyPoint : ${luckyPoint}');
 
+    print('********************************************************');
+    luckyPyramid();
+    disableButton();
+    
+
+
     captureWidget();
+  }
+
+  luckyPyramid() {
+    return SizedBox(
+      child: luckyPoint <= 60
+          ? Image.asset('attachedfiles/levelfile/g-1.gif')
+          : luckyPoint > 60 && luckyPoint <= 70
+              ? Image.asset('attachedfiles/levelfile/g-2.gif')
+              : luckyPoint > 70 && luckyPoint <= 80
+                  ? Image.asset('attachedfiles/levelfile/g-3.gif')
+                  : luckyPoint > 80 && luckyPoint <= 90
+                      ? Image.asset('attachedfiles/levelfile/g-4.gif')
+                      : Image.asset('attachedfiles/levelfile/g-5.gif'),
+    );
   }
 
   showText() {
@@ -132,10 +156,10 @@ class ResultController extends GetxController {
             : luckyPoint > 60 && luckyPoint <= 70
                 ? Duration(seconds: 10)
                 : luckyPoint > 70 && luckyPoint <= 80
-                    ? Duration(seconds: 11)
+                    ? Duration(seconds: 12)
                     : luckyPoint > 80 && luckyPoint <= 90
-                        ? Duration(seconds: 12)
-                        : Duration(seconds: 13),
+                        ? Duration(seconds: 15)
+                        : Duration(seconds: 18),
       );
 
       // 위젯을 캡처하여 이미지로 저장
@@ -151,7 +175,7 @@ class ResultController extends GetxController {
 
   void disableButton() async {
     isButtonDisabled.value = true;
-    await Future.delayed(Duration(seconds: 14));
+    await Future.delayed(Duration(seconds: 18));
     isButtonDisabled.value = false;
   }
 }

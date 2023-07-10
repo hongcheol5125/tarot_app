@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:tarot_app/model/post.dart';
+import 'package:tarot_app/routes/app_routes.dart';
 import 'package:tarot_app/services/local_data_service.dart';
 import 'package:tarot_app/services/post_service.dart';
 import 'package:tarot_app/utils/image_selector.dart';
@@ -60,15 +61,19 @@ class LuckyBoxController extends GetxController {
     String titleText = titleC.text;
     String nicknameText = nicknameC.text;
     String passwordText = pwC.text;
-    List<File> files = [];
+    List<File?> files = [];
     if (selectedImage1.value != null) {
       files.add(selectedImage1.value!);
     }
     if (selectedImage2.value != null) {
       files.add(selectedImage2.value!);
+    } else {
+      files.add(null);
     }
     if (selectedImage3.value != null) {
       files.add(selectedImage3.value!);
+    } else {
+      files.add(null);
     }
     if (await postService.uploadPost(
       titleText: titleText,
@@ -76,9 +81,9 @@ class LuckyBoxController extends GetxController {
       passwordText: passwordText,
       files: files,
     )) {
-      Get.showSnackbar(GetSnackBar(message: '업로드 성공'));
+      Get.snackbar('업로드', '업로드 성공!');
     } else {
-      Get.showSnackbar(GetSnackBar(message: '업로드 실패'));
+      Get.snackbar('업로드', '업로드 실패');
     }
   }
 
@@ -268,7 +273,7 @@ class LuckyBoxController extends GetxController {
       return;
     }
 
-    List<File> files = [];
+    List<File?> files = [];
     if (selectedImage1.value != null) {
       files.add(selectedImage1.value!);
     } else {
@@ -277,9 +282,13 @@ class LuckyBoxController extends GetxController {
     }
     if (selectedImage2.value != null) {
       files.add(selectedImage2.value!);
+    } else {
+      files.add(null);
     }
     if (selectedImage3.value != null) {
       files.add(selectedImage3.value!);
+    } else {
+      files.add(null);
     }
 
     if (await postService.updatePost(
@@ -288,11 +297,11 @@ class LuckyBoxController extends GetxController {
       nicknameText: nicknameChangeText,
       files: files,
     )) {
-      Get.showSnackbar(GetSnackBar(message: '업로드 성공'));
-      return;
+      Get.back();
+      Get.snackbar('업로드', '업로드 성공!');
     } else {
-      Get.showSnackbar(GetSnackBar(message: '업로드 실패'));
-      return;
+      Get.back();
+      Get.snackbar('업로드', '업로드 실패');
     }
   }
 
@@ -315,5 +324,12 @@ class LuckyBoxController extends GetxController {
     if (file != null) {
       selectedImage3.value = file;
     }
+  }
+
+  Future<bool> onWillPop() {
+    // 뒤로가기 버튼 처리 로직 작성
+    Get.offNamed(Routes.CHECK_PAGE, arguments: 0);
+    // true를 반환하면 기본 뒤로가기 동작 실행, false를 반환하면 동작 무시
+    return Future.value(true);
   }
 }
